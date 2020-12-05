@@ -5,9 +5,9 @@ from Utils.database import db, User
 import asyncio
 from discord.utils import get
 import random
-VERTIFICATION_TIME = 10
+VERTIFICATION_TIME = 60
 UPDATE_SLEEP = 2
-DEBUG = True
+DEBUG = False
 
 def scale(a,ln):
 	a=str(a)
