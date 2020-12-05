@@ -1,0 +1,4 @@
+beautifulsoup4==4.9.3
+bs4==0.0.1
+discord.py==1.5.1
+async-timeout==3.0.1
