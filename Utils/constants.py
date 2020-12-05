@@ -6,7 +6,7 @@ YOURCF = "s59_60r"
 YOURCC = "s59_60r"
 YOURATC = "s59_60r"
 GITHUB = "https://github.com/s-i-d-d-i-s/Sparky-Bot"
-BOTIMAGE = "https://s3.amazonaws.com/codechef_shared/sites/default/files/uploads/pictures/76a39c37b49f7b590c50e01bfc77b644.JPG"
+BOTIMAGE = "https://i.ibb.co/YpTJHzh/Sparky-Logo.png"
 VERSION = "1.0"
 
 BASE_DIR = __file__

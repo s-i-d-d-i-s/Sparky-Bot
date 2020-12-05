@@ -14,10 +14,9 @@ async def presence(bot):
     await bot.change_presence(activity=discord.Activity(
         type=discord.ActivityType.listening,
         name='your commands'))
-    await asyncio.sleep(5)
+    await asyncio.sleep(60)
 
-    @tasks.task(name='OrzUpdate',
-               waiter=tasks.Waiter.fixed_delay(5*60))
+    @tasks.task(name='OrzUpdate', waiter=tasks.Waiter.fixed_delay(5*60))
     async def presence_task(_):
         while True:
             target = random.choice([
@@ -56,8 +55,8 @@ async def on_member_remove(member):
 	print(f'{member} has left our named {member.guild}!')
 
 
-
-token = "Nzg0NzQyODQxNzIwMzczMjU4.X8tuuQ.6NlBqVJwyoHPEla63QcdjhoPwtI"#os.environ['SPARKY_TOKEN']
+#Add Your Bot Token
+token = ""
 
 
 client.run(token)
