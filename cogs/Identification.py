@@ -58,12 +58,12 @@ class Identification(commands.Cog):
 		if handle==None:
 			await ctx.send("```You need to provide your handle !```")
 		else:
-			cur_user = User.select().where(User.username == f'{handle}',User.guild == serverid)
+			cur_user = User.select().where(User.discordid == ctx.author.id,User.guild == serverid)
 			exists = False
 			if len(cur_user) >0:
 				cur_user = cur_user.get()
 				exists = True
-				await ctx.send(f"`Handle currently set as : `\t<@!{cur_user.discordid}>`\t|{cur_user.username}\t|{cur_user.rating}\n`")
+				await ctx.send(f"`Handle currently set as : {cur_user.username}\n`")
 				await ctx.send(f"```Ask an admin to reset your handle if you wish to change```")
 			if exists == False:
 				hashString = Utils.user.getUserNameHash()
@@ -91,12 +91,13 @@ class Identification(commands.Cog):
 							await member.add_roles(role)
 							await ctx.send(embed=data['embed'])	
 						else:
-							await ctx.send("Handle not set ! Hash Not Matched ! Try again.")
+							await ctx.send("```Handle not set ! Hash Not Matched ! Try again.```")
 				except:
-					await ctx.send("Handle not set ! Try again.")
+					await ctx.send("```Handle not set ! Try again.```")
 
 
 	@commands.command(brief='Reset an handle')
+	@commands.has_role('Admin')
 	async def reset(self,ctx,handle=None):
 		"""Reset Codechef handles"""
 		serverid = int(ctx.message.guild.id)
@@ -111,6 +112,14 @@ class Identification(commands.Cog):
 			else:
 				cur_user = cur_user.get()
 			if exists == True:
+				server = ctx.message.guild
+				member = server.get_member(cur_user.discordid)
+				roles = member.roles
+				for r in roles:
+					role = get(server.roles, name=r.name)
+					if str(role).find("★")!=-1:
+						print("Removing Role ",role)
+						await member.remove_roles(role)	
 				cur_user.delete_instance()
 				await ctx.send(f"`Handle removed !`")
 

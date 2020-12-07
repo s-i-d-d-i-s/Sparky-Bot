@@ -34,7 +34,7 @@ def getUserData(username,member):
 		header_containers = soup.find_all('header')
 		name = header_containers[1].find('h2').text
 		image = "https://s3.amazonaws.com/codechef_shared"+soup.findAll('img',{"width":"70px"})[0].attrs['src']
-		desc = "**Handle for <@{}> succesfully set to {}**".format(member.id,username)
+		desc = "**Handle for <@{}> succesfully set to [{}](https://www.codechef.com/users/{})**".format(member.id,username,username)
 		colour = discord.Colour.light_gray()
 		if rating >=2500:
 			colour = discord.Colour.red()

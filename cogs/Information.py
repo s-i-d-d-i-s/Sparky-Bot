@@ -22,6 +22,7 @@ class Information(commands.Cog):
 		os._exit(0)
 
 	@commands.command(brief='Sparky Version')
+	@commands.has_role('Admin')
 	async def version(self,ctx):
 		desc = "**Sparky Version: {} | Created by [s59_60r](https://www.codechef.com/users/s59_60r)**".format(VERSION)
 		embed = discord.Embed(description=desc, color=discord.Colour.red())

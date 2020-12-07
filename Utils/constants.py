@@ -8,8 +8,9 @@ YOURATC = "s59_60r"
 GITHUB = "https://github.com/s-i-d-d-i-s/Sparky-Bot"
 BOTIMAGE = "https://i.ibb.co/YpTJHzh/Sparky-Logo.png"
 VERSION = "1.0"
-
-BASE_DIR = __file__
-BASE_DIR = BASE_DIR[0:BASE_DIR.find("\\Utils")]
+DEBUG = False
+BASE_DIR ="/app"
+if DEBUG == True:
+	BASE_DIR = "C:\\Users\\Siddharth\\Documents\\Github\\SparkyBotDeploy"
 
 DATABASE_DIR = os.path.join(BASE_DIR,"Data/database.db")
