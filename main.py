@@ -9,6 +9,7 @@ client = commands.Bot(command_prefix= '=', intents = intents)
 
 
 
+
 ## Load Cogs
 for filename in os.listdir('./cogs'):
 	if filename.endswith('.py'):
@@ -36,7 +37,7 @@ async def on_member_remove(member):
 
 
 #Add Your Bot Token
-token = "YOURBOTTOKEN"
+token = "YOUR BOT TOKEN"
 
 
 client.run(token)

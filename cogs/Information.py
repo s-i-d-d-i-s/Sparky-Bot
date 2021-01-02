@@ -22,19 +22,11 @@ class Information(commands.Cog):
 		os._exit(0)
 
 	@commands.command(brief='Sparky Version')
-	@commands.has_role('Admin')
 	async def version(self,ctx):
 		desc = "**Sparky Version: {} | Created by [s59_60r](https://www.codechef.com/users/s59_60r)**".format(VERSION)
 		embed = discord.Embed(description=desc, color=discord.Colour.red())
 		embed.add_field(name='Github', value=f"[Project]({GITHUB})", inline=True)
 		embed.set_thumbnail(url=BOTIMAGE)
-		if len(YOURCF) > 0 :
-			embed.add_field(name='Codeforces', value=f"[{YOURCF}](https://www.codeforces.com/profile/{YOURCF})", inline=True)
-		if len(YOURCC) > 0:
-			embed.add_field(name='Codechef', value=f"[{YOURCC}](https://www.codechef.com/users/{YOURCC})", inline=True)
-		if len(YOURATC) >0:
-			embed.add_field(name='Atcoder', value=f"[{YOURATC}](https://atcoder.jp/users/{YOURATC})", inline=True)
-
 		
 		await ctx.send(embed=embed)
 

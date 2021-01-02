@@ -25,7 +25,7 @@ class Features(commands.Cog):
 			await ctx.send("```Enter the handle !```")
 		else:
 			try:
-				url = "https://www.codechef.com/recent/user?page=1&user_handle={}".format(username)
+				url = "https://www.codechef.com/recent/user?page=0&user_handle={}".format(username)
 				data = json.loads(requests.get(url).content)
 				data = data['content']
 				data = bs4.BeautifulSoup(data)
