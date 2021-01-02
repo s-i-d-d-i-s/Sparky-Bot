@@ -51,3 +51,8 @@ python main.py
 
 This bot is in Beta, and have only basic functionality.
 All contributions are welcome.
+
+## Thanks
+
+[imjohnzakkam](https://github.com/imjohnzakkam) for testing the bot in production and giving valuable feedback.
+[SayangitBIT](https://github.com/SayangitBIT) for testing the bot in production and giving valuable feedback.
