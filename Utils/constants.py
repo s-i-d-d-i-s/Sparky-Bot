@@ -11,6 +11,6 @@ VERSION = "1.0"
 DEBUG = False
 BASE_DIR ="/app"
 if DEBUG == True:
-	BASE_DIR = "C:\\Users\\Siddharth\\Documents\\Github\\SparkyBotDeploy"
+	BASE_DIR = "C:\\Users\\Siddharth-Dev\\Documents\\Github\\Sparky-Deploy\\sparky-bot-cc"
 
 DATABASE_DIR = os.path.join(BASE_DIR,"Data/database.db")

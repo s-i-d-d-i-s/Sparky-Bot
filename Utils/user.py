@@ -30,7 +30,11 @@ def getUserData(username,member):
 		page = requests.get(url)
 		soup = bs4.BeautifulSoup(page.text, 'html.parser')
 		rating = int(soup.find('div', class_='rating-number').text)
-		stars = soup.find('span', class_='rating').text
+		stars = "1★"
+		try:
+			stars = soup.find('span', class_='rating').text
+		except:
+			print("Unrated User")
 		header_containers = soup.find_all('header')
 		name = header_containers[1].find('h2').text
 		image = "https://s3.amazonaws.com/codechef_shared"+soup.findAll('img',{"width":"70px"})[0].attrs['src']
@@ -54,7 +58,8 @@ def getUserData(username,member):
 		embed.add_field(name='Stars', value=stars, inline=True)
 		embed.set_thumbnail(url=image)
 		return { "Status":0, "Name":name, "Rating":rating, "Stars": stars, "embed":embed }
-	except:
+	except Exception as e:
+		print(e)
 		return { "Status":1 }
 
 

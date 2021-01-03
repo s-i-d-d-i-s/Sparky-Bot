@@ -24,6 +24,7 @@ class Contests(commands.Cog):
 		"""Get Upcoming Contests on Codechef"""
 		try:
 			data = Utils.contests.getFutureContest()
+			data.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
 			await ctx.send(embed=data)
 		except:
 			await ctx.send("```Please Try Again !```")

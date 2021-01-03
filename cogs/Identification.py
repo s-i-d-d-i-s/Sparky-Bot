@@ -13,6 +13,14 @@ def scale(a,ln):
 	a=str(a)
 	while(len(a)<ln):
 		a=a+" "
+	longer = False
+	if len(a)>ln:
+		longer = True
+	while len(a)>ln:
+		a = a[:-1]
+	if longer:
+		a = a[:-3]
+		a += "..."
 	return a
 
 class Identification(commands.Cog):
@@ -124,6 +132,94 @@ class Identification(commands.Cog):
 				await ctx.send(f"`Handle removed !`")
 
 
+
+
+	@commands.command(brief='Set an handle')
+	@commands.has_role('Admin')
+	async def set(self,ctx,discord_user=None,handle=None):
+		"""Set Codechef handles
+		   =set @discord_user handle
+		"""
+		serverid = int(ctx.message.guild.id)
+		if handle==None:
+			await ctx.send("```You need to provide a Codechef handle !```")
+		elif discord_user==None:
+			await ctx.send("```You need to provide a Dicord Username !```")
+		else:
+			user_discordid = discord_user[3:-1]
+			cur_user = User.select().where(User.discordid == user_discordid,User.guild == serverid)
+			exists = False
+			if len(cur_user) >0:
+				cur_user = cur_user.get()
+				exists = True
+				await ctx.send(f"`Handle currently set as : {cur_user.username}\n`")
+				await ctx.send(f"```Reset the handle first if you wish to change```")
+			if exists == False:
+				server = ctx.message.guild
+				member = server.get_member(int(user_discordid))
+				try:
+					data = Utils.user.getUserData(handle,member)
+					if data['Status']==1:
+						await ctx.send(f"Handle not set!")	
+					else:
+						roles = member.roles
+						cur_usern = User(username=handle,discordid=user_discordid,rating=data['Rating'],guild=serverid)
+						cur_usern.save()
+						if exists:
+							cur_user.delete_instance()
+						for r in roles:
+							role = get(server.roles, name=r.name)
+							if str(role).find("★")!=-1:
+								print("Removing Role ",role)
+								await member.remove_roles(role)	
+						role = get(server.roles, name=data['Stars'].strip())
+						await member.add_roles(role)
+						await ctx.send(embed=data['embed'])	
+				except:
+					await ctx.send("```Handle not set ! Try again.```")
+
+	@commands.command(brief='Set an handle using ID')
+	@commands.has_role('Admin')
+	async def set_by_id(self,ctx,user_discordid=None,handle=None):
+		"""Set Codechef handles by Discord ID
+		   =set discord_user_id handle
+		"""
+		serverid = int(ctx.message.guild.id)
+		if handle==None:
+			await ctx.send("```You need to provide a Codechef handle !```")
+		elif user_discordid==None:
+			await ctx.send("```You need to provide a Dicord Username !```")
+		else:
+			cur_user = User.select().where(User.discordid == user_discordid,User.guild == serverid)
+			exists = False
+			if len(cur_user) >0:
+				cur_user = cur_user.get()
+				exists = True
+				await ctx.send(f"`Handle currently set as : {cur_user.username}\n`")
+				await ctx.send(f"```Reset the handle first if you wish to change```")
+			if exists == False:
+				server = ctx.message.guild
+				member = server.get_member(int(user_discordid))
+				try:
+					data = Utils.user.getUserData(handle,member)
+					if data['Status']==1:
+						await ctx.send(f"Handle not set!")	
+					else:
+						roles = member.roles
+						cur_usern = User(username=handle,discordid=user_discordid,rating=data['Rating'],guild=serverid)
+						cur_usern.save()
+						if exists:
+							cur_user.delete_instance()
+						for r in roles:
+							role = get(server.roles, name=r.name)
+							if str(role).find("★")!=-1:
+								print("Removing Role ",role)
+								await member.remove_roles(role)	
+						role = get(server.roles, name=data['Stars'].strip())
+						await member.add_roles(role)
+						await ctx.send(embed=data['embed'])	
+				except:
+					await ctx.send("```Handle not set ! Try again.```")
 
 
 	@commands.command(brief='Update User Roles')
