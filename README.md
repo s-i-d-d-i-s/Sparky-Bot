@@ -42,6 +42,9 @@ Create a bot on your server. Here is a [tutorial](https://github.com/reactiflux/
 #### Add Bot Token
 
 In `main.py` replace  `"YOUR BOT TOKEN"` with your bot token.
+In `Utils\constants.py` replace `OWNER` with your Discord User ID
+In `Utils\constants.py` set `DEBUG` to `True` and set `BASE_DIR` to the main folder.
+
 
 #### Final Steps 
 
