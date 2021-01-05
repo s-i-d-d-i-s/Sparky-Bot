@@ -6,6 +6,21 @@ A Discord bot for Codechef
 1. Identify users based on their Codechef handles.
 2. Check recent submissions by a user
 3. Check upcoming contests.
+4. Plot Rating Graph
+
+## Images
+
+#### Identify people by Codechef Handles
+<img src="https://i.ibb.co/5xhYtBy/xcgxc.png" alt="xcgxc" border="0">
+
+#### Check recent submissions by users
+<img src="https://i.ibb.co/4m4M0zT/subs.png" alt="subs" border="0">
+
+#### Plot Rating Graphs
+<img src="https://i.ibb.co/SKkQVJz/ratinggraph.png" alt="ratinggraph" border="0">
+
+#### Check upcoming contests
+<img src="https://i.ibb.co/TMVnwyg/cont.png" alt="cont" border="0">
 
 ## Installation
 
