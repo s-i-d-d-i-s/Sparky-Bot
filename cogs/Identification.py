@@ -5,6 +5,8 @@ from Utils.database import db, User
 import asyncio
 from discord.utils import get
 import random
+from Utils.constants import OWNER,NON_OWNER_MSG
+
 VERTIFICATION_TIME = 60
 UPDATE_SLEEP = 2
 DEBUG = False
@@ -36,12 +38,13 @@ class Identification(commands.Cog):
 	async def handles(self,ctx,handle=None):
 		"""Check Users in Server'"""
 		No=1
+		serverid = int(ctx.message.guild.id)
 		if handle==None:
 			res = "```"
 			h1 = scale("Discord User",20)
 			h2 = scale("CC Username",15)
 			res+=(f"No . {h1}|{h2}|Rating\n\n")
-			for cur_user in User.select().order_by(User.rating)[::-1]:
+			for cur_user in User.select().where(User.guild == f'{serverid}').order_by(User.rating)[::-1]:
 				userno = scale(No,3)
 				discorduser = scale(self.client.get_user(int(cur_user.discordid)),20)
 				username = scale(cur_user.username,15)
@@ -82,7 +85,7 @@ class Identification(commands.Cog):
 				try:
 					data = Utils.user.getUserData(handle,member)
 					if data['Status']==1:
-						await ctx.send(f"Handle not set!")	
+						await ctx.send(f"```Handle not set!```")	
 					else:
 						if DEBUG or data['Name'].strip() == hashString:
 							roles = member.roles
@@ -116,7 +119,7 @@ class Identification(commands.Cog):
 			exists = True
 			if len(cur_user) ==0:
 				exists = False
-				await ctx.send(f"`Handle not found in the server`")
+				await ctx.send(f"```Handle not found in the server```")
 			else:
 				cur_user = cur_user.get()
 			if exists == True:
@@ -129,7 +132,7 @@ class Identification(commands.Cog):
 						print("Removing Role ",role)
 						await member.remove_roles(role)	
 				cur_user.delete_instance()
-				await ctx.send(f"`Handle removed !`")
+				await ctx.send(f"```Handle removed !```")
 
 
 
@@ -146,37 +149,40 @@ class Identification(commands.Cog):
 		elif discord_user==None:
 			await ctx.send("```You need to provide a Dicord Username !```")
 		else:
-			user_discordid = discord_user[3:-1]
-			cur_user = User.select().where(User.discordid == user_discordid,User.guild == serverid)
-			exists = False
-			if len(cur_user) >0:
-				cur_user = cur_user.get()
-				exists = True
-				await ctx.send(f"`Handle currently set as : {cur_user.username}\n`")
-				await ctx.send(f"```Reset the handle first if you wish to change```")
-			if exists == False:
-				server = ctx.message.guild
-				member = server.get_member(int(user_discordid))
-				try:
-					data = Utils.user.getUserData(handle,member)
-					if data['Status']==1:
-						await ctx.send(f"Handle not set!")	
-					else:
-						roles = member.roles
-						cur_usern = User(username=handle,discordid=user_discordid,rating=data['Rating'],guild=serverid)
-						cur_usern.save()
-						if exists:
-							cur_user.delete_instance()
-						for r in roles:
-							role = get(server.roles, name=r.name)
-							if str(role).find("★")!=-1:
-								print("Removing Role ",role)
-								await member.remove_roles(role)	
-						role = get(server.roles, name=data['Stars'].strip())
-						await member.add_roles(role)
-						await ctx.send(embed=data['embed'])	
-				except:
-					await ctx.send("```Handle not set ! Try again.```")
+			try:
+				user_discordid = discord_user[3:-1]
+				cur_user = User.select().where(User.discordid == user_discordid,User.guild == serverid)
+				exists = False
+				if len(cur_user) >0:
+					cur_user = cur_user.get()
+					exists = True
+					await ctx.send(f"`Handle currently set as : {cur_user.username}\n`")
+					await ctx.send(f"```Reset the handle first if you wish to change```")
+				if exists == False:
+					server = ctx.message.guild
+					member = server.get_member(int(user_discordid))
+					try:
+						data = Utils.user.getUserData(handle,member)
+						if data['Status']==1:
+							await ctx.send(f"Handle not set!")	
+						else:
+							roles = member.roles
+							cur_usern = User(username=handle,discordid=user_discordid,rating=data['Rating'],guild=serverid)
+							cur_usern.save()
+							if exists:
+								cur_user.delete_instance()
+							for r in roles:
+								role = get(server.roles, name=r.name)
+								if str(role).find("★")!=-1:
+									print("Removing Role ",role)
+									await member.remove_roles(role)	
+							role = get(server.roles, name=data['Stars'].strip())
+							await member.add_roles(role)
+							await ctx.send(embed=data['embed'])	
+					except:
+						await ctx.send("```Handle not set ! Try again.```")
+			except:
+				await ctx.send("```Handle not set ! Check help for instructions```")
 
 	@commands.command(brief='Set an handle using ID')
 	@commands.has_role('Admin')
@@ -184,72 +190,78 @@ class Identification(commands.Cog):
 		"""Set Codechef handles by Discord ID
 		   =set discord_user_id handle
 		"""
-		serverid = int(ctx.message.guild.id)
-		if handle==None:
-			await ctx.send("```You need to provide a Codechef handle !```")
-		elif user_discordid==None:
-			await ctx.send("```You need to provide a Dicord Username !```")
+		if str(ctx.author.id) != str(OWNER):
+			await ctx.send(NON_OWNER_MSG)
 		else:
-			cur_user = User.select().where(User.discordid == user_discordid,User.guild == serverid)
-			exists = False
-			if len(cur_user) >0:
-				cur_user = cur_user.get()
-				exists = True
-				await ctx.send(f"`Handle currently set as : {cur_user.username}\n`")
-				await ctx.send(f"```Reset the handle first if you wish to change```")
-			if exists == False:
-				server = ctx.message.guild
-				member = server.get_member(int(user_discordid))
-				try:
-					data = Utils.user.getUserData(handle,member)
-					if data['Status']==1:
-						await ctx.send(f"Handle not set!")	
-					else:
-						roles = member.roles
-						cur_usern = User(username=handle,discordid=user_discordid,rating=data['Rating'],guild=serverid)
-						cur_usern.save()
-						if exists:
-							cur_user.delete_instance()
-						for r in roles:
-							role = get(server.roles, name=r.name)
-							if str(role).find("★")!=-1:
-								print("Removing Role ",role)
-								await member.remove_roles(role)	
-						role = get(server.roles, name=data['Stars'].strip())
-						await member.add_roles(role)
-						await ctx.send(embed=data['embed'])	
-				except:
-					await ctx.send("```Handle not set ! Try again.```")
+			serverid = int(ctx.message.guild.id)
+			if handle==None:
+				await ctx.send("```You need to provide a Codechef handle !```")
+			elif user_discordid==None:
+				await ctx.send("```You need to provide a Dicord Username !```")
+			else:
+				cur_user = User.select().where(User.discordid == user_discordid,User.guild == serverid)
+				exists = False
+				if len(cur_user) >0:
+					cur_user = cur_user.get()
+					exists = True
+					await ctx.send(f"`Handle currently set as : {cur_user.username}\n`")
+					await ctx.send(f"```Reset the handle first if you wish to change```")
+				if exists == False:
+					server = ctx.message.guild
+					member = server.get_member(int(user_discordid))
+					try:
+						data = Utils.user.getUserData(handle,member)
+						if data['Status']==1:
+							await ctx.send(f"Handle not set!")	
+						else:
+							roles = member.roles
+							cur_usern = User(username=handle,discordid=user_discordid,rating=data['Rating'],guild=serverid)
+							cur_usern.save()
+							if exists:
+								cur_user.delete_instance()
+							for r in roles:
+								role = get(server.roles, name=r.name)
+								if str(role).find("★")!=-1:
+									print("Removing Role ",role)
+									await member.remove_roles(role)	
+							role = get(server.roles, name=data['Stars'].strip())
+							await member.add_roles(role)
+							await ctx.send(embed=data['embed'])	
+					except:
+						await ctx.send("```Handle not set ! Try again.```")
 
 
 	@commands.command(brief='Update User Roles')
 	@commands.has_role('Admin')
 	async def roleupdate(self,ctx):
 		"""Update user roles, don't use it too frequently"""
-		await ctx.send("`Please wait while all roles are being updated`")	
-		serverid = int(ctx.message.guild.id)
-		server_users = User.select().where(User.guild == f'{serverid}')
-		res = "```\n"
-		try:
-			for s in server_users:
-				user = s
-				cur_data = Utils.user.updateData(user.username)
-				oldstar = Utils.user.getStars(user.rating)
-				delta = int(cur_data['Rating']) - int(user.rating)
-				delta = str(delta)
-				if delta[0]!='-':
-					delta = "+"+delta
-				newstar = cur_data["Stars"]
-				updateinfo = f"{user.username} moved from {oldstar} to {newstar}"
-				updateinfo = scale(updateinfo,40)
-				res += "{}\n".format(f"{updateinfo} | Delta = {delta}")
-				user.rating = cur_data['Rating']
-				user.save()
-				await asyncio.sleep(UPDATE_SLEEP)
-			res+="```"
-			await ctx.send(res)	
-		except:
-			await ctx.send("Error While Updating Roles")
+		if str(ctx.author.id) != str(OWNER):
+			await ctx.send(NON_OWNER_MSG)
+		else:
+			await ctx.send("`Please wait while all roles are being updated`")	
+			serverid = int(ctx.message.guild.id)
+			server_users = User.select().where(User.guild == f'{serverid}')
+			res = "```\n"
+			try:
+				for s in server_users:
+					user = s
+					cur_data = Utils.user.updateData(user.username)
+					oldstar = Utils.user.getStars(user.rating)
+					delta = int(cur_data['Rating']) - int(user.rating)
+					delta = str(delta)
+					if delta[0]!='-':
+						delta = "+"+delta
+					newstar = cur_data["Stars"]
+					updateinfo = f"{user.username} moved from {oldstar} to {newstar}"
+					updateinfo = scale(updateinfo,40)
+					res += "{}\n".format(f"{updateinfo} | Delta = {delta}")
+					user.rating = cur_data['Rating']
+					user.save()
+					await asyncio.sleep(UPDATE_SLEEP)
+				res+="```"
+				await ctx.send(res)	
+			except:
+				await ctx.send("Error While Updating Roles")
 		
 	
 	

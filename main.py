@@ -8,7 +8,9 @@ intents = discord.Intents(messages = True, guilds = True, reactions = True, memb
 client = commands.Bot(command_prefix= '=', intents = intents)
 
 
-
+#
+#  await client.change_presence(activity=discord.Game(name=f'{target.display_name} orz'))
+#
 
 ## Load Cogs
 for filename in os.listdir('./cogs'):
@@ -20,7 +22,7 @@ for filename in os.listdir('./cogs'):
 @client.event
 async def on_ready():
 	print("Bot is Ready")
-	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening,name='your commands'))
+	await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(client.guilds)} servers!"))
 
 
 ## On Member Join
@@ -37,7 +39,6 @@ async def on_member_remove(member):
 
 
 #Add Your Bot Token
-token = "YOUR BOT TOKEN"
-
+token = "YourBotToken"
 
 client.run(token)
