@@ -156,8 +156,19 @@ class Identification(commands.Cog):
 				if len(cur_user) >0:
 					cur_user = cur_user.get()
 					exists = True
-					await ctx.send(f"`Handle currently set as : {cur_user.username}\n`")
-					await ctx.send(f"```Reset the handle first if you wish to change```")
+					try:
+						server = ctx.message.guild
+						member = server.get_member(cur_user.discordid)
+						roles = member.roles
+						for r in roles:
+							role = get(server.roles, name=r.name)
+							if str(role).find("★")!=-1:
+								print("Removing Role ",role)
+								await member.remove_roles(role)	
+						cur_user.delete_instance()
+						exists = False
+					except:
+						pass
 				if exists == False:
 					server = ctx.message.guild
 					member = server.get_member(int(user_discordid))
@@ -167,8 +178,8 @@ class Identification(commands.Cog):
 							await ctx.send(f"Handle not set!")	
 						else:
 							roles = member.roles
-							cur_usern = User(username=handle,discordid=user_discordid,rating=data['Rating'],guild=serverid)
-							cur_usern.save()
+							cur_user_new = User(username=handle,discordid=user_discordid,rating=data['Rating'],guild=serverid)
+							cur_user_new.save()
 							if exists:
 								cur_user.delete_instance()
 							for r in roles:
@@ -186,6 +197,7 @@ class Identification(commands.Cog):
 
 	@commands.command(brief='Set an handle using ID')
 	@commands.has_role('Admin')
+	@commands.has_role('Developer')
 	async def set_by_id(self,ctx,user_discordid=None,handle=None):
 		"""Set Codechef handles by Discord ID
 		   =set discord_user_id handle
@@ -233,6 +245,7 @@ class Identification(commands.Cog):
 
 	@commands.command(brief='Update User Roles')
 	@commands.has_role('Admin')
+	@commands.has_role('Developer')
 	async def roleupdate(self,ctx):
 		"""Update user roles, don't use it too frequently"""
 		if str(ctx.author.id) != str(OWNER):

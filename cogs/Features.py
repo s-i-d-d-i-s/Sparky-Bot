@@ -6,7 +6,7 @@ import requests
 import bs4
 import random
 import re
-
+from Utils.user import get_handle
 
 
 class Features(commands.Cog):
@@ -21,6 +21,9 @@ class Features(commands.Cog):
 	@commands.command(brief='Display recent solves by a user')
 	async def stalk(self,ctx,username=None):
 		"""Display recent solves by a user"""
+		if username == None:
+			username = get_handle(ctx)
+
 		if username==None:
 			await ctx.send("```Enter the handle !```")
 		else:

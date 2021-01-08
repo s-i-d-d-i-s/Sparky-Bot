@@ -13,8 +13,8 @@ import io
 Rank = namedtuple('Rank', 'low high title title_abbr color_graph color_embed')
 
 RATED_RANKS = (
-	Rank(-10 ** 9, 1500, '1Star', 'N', '#7F7F7F', 0x808080),
-	Rank(1500, 1600, '2Star', 'P', '#37963B', 0x008000),
+	Rank(-10 ** 9, 1400, '1Star', 'N', '#7F7F7F', 0x808080),
+	Rank(1400, 1600, '2Star', 'P', '#37963B', 0x008000),
 	Rank(1600, 1800, '3Star', 'S', '#4C7FE5', 0x03a89e),
 	Rank(1800, 2000, '4Star', 'E', '#684273', 0x0000ff),
 	Rank(2000, 2200, '5Star', 'CM', '#FFD819', 0xaa00aa),
@@ -49,7 +49,6 @@ def get_current_figure_as_file():
 
 	with open(filename, 'rb') as file:
 		discord_file = discord.File(io.BytesIO(file.read()), filename='plot.png')
-
 	os.remove(filename)
 	return discord_file
 

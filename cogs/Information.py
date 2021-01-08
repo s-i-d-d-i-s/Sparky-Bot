@@ -4,9 +4,10 @@ import asyncio
 from Utils.database import db, User
 from discord.utils import get
 import os
-from Utils.constants import VERSION,GITHUB,YOURCF,YOURCC,YOURATC,BOTIMAGE,OWNER,NON_OWNER_MSG
-
-
+from Utils.constants import VERSION,GITHUB,BOTIMAGE,OWNER,NON_OWNER_MSG
+from Utils.constants import TEMP_DIR
+import time
+import requests
 class Information(commands.Cog):
 	"""docstring for Identification"""
 	def __init__(self, client):
@@ -18,6 +19,7 @@ class Information(commands.Cog):
 
 	@commands.command(brief='Kills Sparky')
 	@commands.has_role('Admin')
+	@commands.has_role('Developer')
 	async def kill(self,ctx):
 		if str(ctx.author.id) != str(OWNER):
 			await ctx.send(NON_OWNER_MSG)
@@ -27,14 +29,20 @@ class Information(commands.Cog):
 
 	@commands.command(brief='Update Presence')
 	@commands.has_role('Admin')
+	@commands.has_role('Developer')
 	async def upd_status(self,ctx):
 		if str(ctx.author.id) != str(OWNER):
 			await ctx.send(NON_OWNER_MSG)
 		else:
-			await self.client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{len(self.client.guilds)} servers!"))
+			cnt = 0
+			for g in self.client.guilds:
+				cnt += len(g.members)
+			await self.client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=f"{cnt} members and {len(self.client.guilds)} servers !"))
+		
 
 	@commands.command(brief='Where is Sparky?')
 	@commands.has_role('Admin')
+	@commands.has_role('Developer')
 	async def where(self,ctx):
 		if str(ctx.author.id) != str(OWNER):
 			await ctx.send(NON_OWNER_MSG)
@@ -48,6 +56,7 @@ class Information(commands.Cog):
 			await ctx.send(f'```{res}```')
 
 	@commands.command(brief='Leave A Server')
+	@commands.has_role('Developer')
 	@commands.has_role('Admin')
 	async def leave(self,ctx,server_id=None):
 		"""
@@ -68,30 +77,39 @@ class Information(commands.Cog):
 
 	@commands.command(brief='Prints Database in SSV')
 	@commands.has_role('Admin')
+	@commands.has_role('Developer')
 	async def getDB(self,ctx):
 		if str(ctx.author.id) != str(OWNER):
 			await ctx.send(NON_OWNER_MSG)
 		else:
 			data = User.select()
-			res = "```"
+			res=""
 			for d in data.tuples().iterator():
 				temp = str(d)
 				temp = temp[1:-1].replace('\'','')
 				temp = temp.replace(' ','')
 				res += temp
-				res += "**"
-			res += "```"
-			await ctx.send(res)
+				res += "|s|"
+			res += ""
+			filename = os.path.join(TEMP_DIR, f'dbdump_{time.time()}.txt')
+			with open(filename, 'w') as file:
+				file.write(res)
+			
+			discord_file = discord.File(filename, filename='dbdump.txt')
+			os.remove(filename)
+			await ctx.send(file=discord_file)
 
-	@commands.command(brief='Sets Database from CSV')
+	@commands.command(brief='Sets Database from SSV')
 	@commands.has_role('Admin')
+	@commands.has_role('Developer')
 	async def setDB(self,ctx,data=None):
 		if str(ctx.author.id) != str(OWNER):
 			await ctx.send(NON_OWNER_MSG)
 		else:
 			if data == None:
 				return 
-			data = data.split("**")
+			data = requests.get(data).content.decode()
+			data = data.split("|s|")
 			data = data[:-1]
 			logg = ""
 			for d in data:

@@ -3,6 +3,8 @@ import bs4
 import random
 import string
 import discord
+from .database import User,db
+
 
 def getStars(rating):
 	if rating <1400:
@@ -19,6 +21,8 @@ def getStars(rating):
 		return "6★"
 	else:
 		return "7★"
+
+
 def getUserNameHash():
 	length = 10
 	result_str = ''.join(random.choice(string.ascii_uppercase) for i in range(length))
@@ -87,3 +91,18 @@ def updateData(username):
 		return { "Status":0, "Rating":rating, "Stars": stars}
 	except:
 		return { "Status":1 }
+
+def is_in_db(ctx):
+	serverid = int(ctx.message.guild.id)
+	cur_user = User.select().where(User.discordid == ctx.author.id,User.guild == serverid)
+	if len(cur_user) >0:
+		return True
+	return False
+
+def get_handle(ctx):
+	serverid = int(ctx.message.guild.id)
+	cur_user = User.select().where(User.discordid == ctx.author.id,User.guild == serverid)
+	if len(cur_user) >0:
+		cur_user = cur_user.get()
+		return cur_user.username
+	return None
