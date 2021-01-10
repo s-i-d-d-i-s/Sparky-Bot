@@ -1,7 +1,7 @@
 import requests
 import discord
 import random
-
+import json
 ## Return Webpage Content
 def getWebpage(url):
     return requests.get(url).content
@@ -76,6 +76,7 @@ def getStars(rating):
 		return "7★"
 
 def isUserRated(username):
+    return True
     url = "https://www.codechef.com/recent/user?page=0&user_handle={}".format(username)
     data = json.loads(getWebpage(url))
     if data['max_page'] != 0:

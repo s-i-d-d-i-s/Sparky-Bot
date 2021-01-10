@@ -3,8 +3,7 @@ from discord.ext import commands
 import asyncio
 from discord.utils import get
 import os
-from .Utils.constants import VERSION,GITHUB,BOTIMAGE,OWNER,NON_OWNER_MSG
-from .Utils.constants import TEMP_DIR
+from .Utils import constants
 import time
 import requests
 class Information(commands.Cog):
@@ -20,8 +19,8 @@ class Information(commands.Cog):
 	@commands.has_role('Admin')
 	@commands.has_role('Developer')
 	async def kill(self,ctx):
-		if str(ctx.author.id) != str(OWNER):
-			await ctx.send(NON_OWNER_MSG)
+		if str(ctx.author.id) != str(constants.OWNER):
+			await ctx.send(constants.NON_OWNER_MSG)
 		else:
 			await ctx.send('```Killing Sparky...```')
 			os._exit(0)
@@ -30,8 +29,8 @@ class Information(commands.Cog):
 	@commands.has_role('Admin')
 	@commands.has_role('Developer')
 	async def upd_status(self,ctx):
-		if str(ctx.author.id) != str(OWNER):
-			await ctx.send(NON_OWNER_MSG)
+		if str(ctx.author.id) != str(constants.OWNER):
+			await ctx.send(constants.NON_OWNER_MSG)
 		else:
 			cnt = 0
 			for g in self.client.guilds:
@@ -43,8 +42,8 @@ class Information(commands.Cog):
 	@commands.has_role('Admin')
 	@commands.has_role('Developer')
 	async def where(self,ctx):
-		if str(ctx.author.id) != str(OWNER):
-			await ctx.send(NON_OWNER_MSG)
+		if str(ctx.author.id) != str(constants.OWNER):
+			await ctx.send(constants.NON_OWNER_MSG)
 		else:
 			res = ""
 			for g in self.client.guilds:
@@ -64,8 +63,8 @@ class Information(commands.Cog):
 		if server_id==None:
 			await ctx.send("```Give a Server ID```")
 			return
-		if str(ctx.author.id) != str(OWNER):
-			await ctx.send(NON_OWNER_MSG)
+		if str(ctx.author.id) != str(constants.OWNER):
+			await ctx.send(constants.NON_OWNER_MSG)
 		else:
 			try:
 				toleave = self.client.get_guild(int(server_id))

@@ -16,18 +16,23 @@ def getUserNameHash():
 
 ## Fetch user data like stars, raing, name, and profile picture
 def fetchUserData(username):
-	page = cc_commons.getWebpage('https://www.codechef.com/users/{}'.format(username))
-	soup = bs4.BeautifulSoup(page, 'html.parser')
-	rating = int(soup.find('div', class_='rating-number').text)
-	stars = "1★"
 	try:
-		stars = soup.find('span', class_='rating').text
-	except:
-		print("Unrated User")
-	header_containers = soup.find_all('header')
-	name = header_containers[1].find('h2').text
-	image = "https://s3.amazonaws.com/codechef_shared"+soup.findAll('img',{"width":"70px"})[0].attrs['src']
-	return {'rating':rating,'stars':stars,'name':name,'profilePicture':image}
+		page = cc_commons.getWebpage('https://www.codechef.com/users/{}'.format(username))
+		soup = bs4.BeautifulSoup(page, 'html.parser')
+		rating = int(soup.find('div', class_='rating-number').text)
+		stars = "1★"
+		try:
+			stars = soup.find('span', class_='rating').text
+		except:
+			print("Unrated User")
+		header_containers = soup.find_all('header')
+		name = header_containers[1].find('h2').text
+		image = "https://s3.amazonaws.com/codechef_shared"+soup.findAll('img',{"width":"70px"})[0].attrs['src']
+		return {'status':0,'rating':rating,'stars':stars,'name':name,'profilePicture':image}
+	except Exception as e:
+		print(e)
+		return {'status':1}
+
 
 
 ## Get a user's rating history
@@ -75,26 +80,3 @@ def getSubmission(username):
 		return_data.append([subs[i],desc])
 	return return_data
 
-
-def getUserData(username,member):
-	try:
-		user_data = fetchUserData(username)
-		desc = "**Handle for <@{}> succesfully set to [{}](https://www.codechef.com/users/{})**".format(member.id,username,username)
-		colour = cc_commons.getDiscordColourByRating(user_data['rating'])
-		embed = discord.Embed(description=desc, color=colour)
-		embed.add_field(name='Rating', value=user_data['rating'], inline=True)
-		embed.add_field(name='Stars', value=user_data['rating'], inline=True)
-		embed.set_thumbnail(url=user_data['profilePicture'])
-		return { "Status":0, "Name":user_data['name'], "Rating":user_data['rating'], "Stars": user_data['stars'], "embed":embed }
-	except Exception as e:
-		print(e)
-		return { "Status":1 }
-
-
-
-def updateData(username):
-	try:
-		user_data = fetchUserData(username)
-		return { "Status":0, "Rating":user_data['rating'], "Stars": user_data['stars']}
-	except:
-		return { "Status":1 }

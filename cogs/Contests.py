@@ -19,7 +19,7 @@ class Contests(commands.Cog):
 	async def on_ready(self):
 		print("Contests is online")
 
-	@commands.command(brief='Display Future Contests')
+	@commands.command(brief='Display future contests')
 	async def future(self,ctx):
 		"""Get Upcoming Contests on Codechef"""
 		try:

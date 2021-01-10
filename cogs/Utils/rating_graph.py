@@ -4,7 +4,7 @@ import datetime as dt
 from cycler import cycler
 import time,os
 import seaborn as sns
-from .constants import TEMP_DIR, RATED_RANKS
+from . import constants
 from .import user
 import io
 
@@ -14,7 +14,7 @@ rating_color_cycler = cycler('color', ['#5d4dff', '#009ccc', '#00ba6a', '#b99d27
 
 
 def get_current_figure_as_file():
-	filename = os.path.join(TEMP_DIR, f'tempplot_{time.time()}.png')
+	filename = os.path.join(constants.TEMP_DIR, f'tempplot_{time.time()}.png')
 	plt.savefig(filename, facecolor=plt.gca().get_facecolor(), bbox_inches='tight', pad_inches=0.25)
 	with open(filename, 'rb') as file:
 		discord_file = discord.File(io.BytesIO(file.read()), filename='plot.png')
@@ -43,6 +43,6 @@ def getRatingGraph(handle):
 	plt.clf()
 	plt.axes().set_prop_cycle(rating_color_cycler)
 	plt.plot(times,ratings,linestyle='-',marker='o',markersize=6,markerfacecolor='white',markeredgewidth=0.5)
-	plot_rating_bg(RATED_RANKS)
+	plot_rating_bg(constants.RATED_RANKS)
 	plt.gcf().autofmt_xdate()
 	return get_current_figure_as_file()

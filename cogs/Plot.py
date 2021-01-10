@@ -30,7 +30,8 @@ class Plot(commands.Cog):
 					embed.set_image(url=f'attachment://{discord_graph_file.filename}')
 					embed.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
 					await ctx.send(embed=embed,file=discord_graph_file)	
-				except:
+				except Exception as e:
+					print(e)
 					await ctx.send("```Unable to Plot, check username or try again later!```")	
 			else:
 				await ctx.send("```User is not rated```")	
