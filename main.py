@@ -3,7 +3,7 @@ from discord.ext import commands
 import asyncio
 import random
 import os
-from Utils.constants import DEBUG
+from cogs.Utils.constants import DEBUG
 
 
 ## Setup Client
@@ -43,7 +43,7 @@ async def on_member_remove(member):
 
 #Add Your Bot Token
 token = "YourBotToken"
-test_token = "YourBotToken"
+test_token = "Nzk1OTQ0NzcyNDE3NDg2ODk4.X_QvVQ.Ir4dX6RbziNvLVoub8T5yRMXuFA"
 
 if DEBUG == False:
 	client.run(token)

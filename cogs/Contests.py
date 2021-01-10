@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-import Utils.contests
+from .Utils import contests
 import asyncio
 import random
 from discord.utils import get
@@ -23,11 +23,11 @@ class Contests(commands.Cog):
 	async def future(self,ctx):
 		"""Get Upcoming Contests on Codechef"""
 		try:
-			data = Utils.contests.getFutureContest()
+			data = contests.getFutureContest()
 			data.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
 			await ctx.send(embed=data)
 		except:
-			await ctx.send("```Please Try Again !```")
+			await ctx.send("```API Limit Exhausted !```")
 
 
 

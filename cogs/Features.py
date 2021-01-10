@@ -6,8 +6,7 @@ import requests
 import bs4
 import random
 import re
-from Utils.user import get_handle
-
+from .Utils import cc_commons, user
 
 class Features(commands.Cog):
 	"""docstring for Features"""
@@ -21,59 +20,19 @@ class Features(commands.Cog):
 	@commands.command(brief='Display recent solves by a user')
 	async def stalk(self,ctx,username=None):
 		"""Display recent solves by a user"""
-		if username == None:
-			username = get_handle(ctx)
-
 		if username==None:
 			await ctx.send("```Enter the handle !```")
 		else:
 			try:
-				url = "https://www.codechef.com/recent/user?page=0&user_handle={}".format(username)
-				data = json.loads(requests.get(url).content)
-				if data['max_page'] != 0:
-					data = data['content']
-					data = bs4.BeautifulSoup(data)
-					subs = data.findAll('a')[:-2]
-					subs = [x.text for x in subs]
-					imgs = data.findAll('img')[:-2]
-					pts = data.findAll('span')
-					imgs = ["https://s3.amazonaws.com/codechef_shared"+x.attrs['src'] for x in imgs]
-					colour = random.choice([discord.Colour.purple(),discord.Colour.green(),discord.Colour.blue(),discord.Colour.orange()])
-					embed = discord.Embed(description="**These are the recent submissions from [{}](https://codechef.com/users/{}).**".format(username,username),color=colour)
-					for i in range(min(len(imgs),5)):
-						verd = "WA"
-						if imgs[i].find("tick-icon")!=-1:
-							verd = "AC"
-						elif imgs[i].find("clock_error")!=-1:
-							verd = "TLE"
-						elif imgs[i].find("alert-icon")!=-1:
-							verd = "CE"
-						elif imgs[i].find("runtime")!=-1:
-							verd = "RE"
-						pts2 = re.findall("\[.*\]",pts[i].text)
-						if len(pts2)==0:
-							if verd == "AC":
-								pts2 = "Accepted"
-							elif verd == "WA":
-								pts2 = "Wrong Answer"
-							elif verd == "CE":
-								pts2 = "Compilation Error"
-							elif verd == "TLE":
-								pts2 = "Time Limit Exceed"
-							elif verd == "RE":
-								pts2 = "Runtime Error"
-						else:
-							pts2="{}".format(pts2[0])
-
-						em = '\N{EN SPACE}'
-						sq = '\N{WHITE SQUARE WITH UPPER RIGHT QUADRANT}'
-						desc = f'`{em}{verd}{em}| {em}{pts2}{em}`'
-						embed.add_field(name=f'{subs[i]}', value=desc, inline=False)
-					embed.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
-					await ctx.send(embed=embed)
-				else:
-					await ctx.send("```No Valid Submissions Found```")	
-			except:
+				colour = cc_commons.getRandomColour()
+				embed = discord.Embed(description="**These are the recent submissions from [{}](https://codechef.com/users/{}).**".format(username,username),color=colour)
+				data =  user.getSubmission(username)
+				for d in data:
+					embed.add_field(name=f'{d[0]}', value=d[1], inline=False)
+				embed.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
+				await ctx.send(embed=embed)
+			except Exception as e:
+				print(e)
 				await ctx.send("Please try again !")
 
 def setup(client):

@@ -1,11 +1,10 @@
 import discord
 from discord.ext import commands
 import asyncio
-from Utils.database import db, User
 from discord.utils import get
 import os
-from Utils.constants import VERSION,GITHUB,BOTIMAGE,OWNER,NON_OWNER_MSG
-from Utils.constants import TEMP_DIR
+from .Utils.constants import VERSION,GITHUB,BOTIMAGE,OWNER,NON_OWNER_MSG
+from .Utils.constants import TEMP_DIR
 import time
 import requests
 class Information(commands.Cog):
@@ -75,51 +74,7 @@ class Information(commands.Cog):
 			except Exception as e:
 				await ctx.send(f'```{e}```')
 
-	@commands.command(brief='Prints Database in SSV')
-	@commands.has_role('Admin')
-	@commands.has_role('Developer')
-	async def getDB(self,ctx):
-		if str(ctx.author.id) != str(OWNER):
-			await ctx.send(NON_OWNER_MSG)
-		else:
-			data = User.select()
-			res=""
-			for d in data.tuples().iterator():
-				temp = str(d)
-				temp = temp[1:-1].replace('\'','')
-				temp = temp.replace(' ','')
-				res += temp
-				res += "|s|"
-			res += ""
-			filename = os.path.join(TEMP_DIR, f'dbdump_{time.time()}.txt')
-			with open(filename, 'w') as file:
-				file.write(res)
-			
-			discord_file = discord.File(filename, filename='dbdump.txt')
-			os.remove(filename)
-			await ctx.send(file=discord_file)
 
-	@commands.command(brief='Sets Database from SSV')
-	@commands.has_role('Admin')
-	@commands.has_role('Developer')
-	async def setDB(self,ctx,data=None):
-		if str(ctx.author.id) != str(OWNER):
-			await ctx.send(NON_OWNER_MSG)
-		else:
-			if data == None:
-				return 
-			data = requests.get(data).content.decode()
-			data = data.split("|s|")
-			data = data[:-1]
-			logg = ""
-			for d in data:
-				cur_data = d.split(',')
-				cur_usern = User(username=str(cur_data[1]),discordid=int(cur_data[2]),rating=int(cur_data[3]),guild=int(cur_data[4]))
-				logg += f"{str(cur_data[1])}, {int(cur_data[2])}, {int(cur_data[3])}, {int(cur_data[4])}"
-				logg +="\n"
-				cur_usern.save()
-			await ctx.send(f"```{logg}```")
-			await ctx.send("```Database Updated```")
 
 	@commands.command(brief='Sparky Version')
 	async def version(self,ctx):
