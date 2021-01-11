@@ -78,10 +78,10 @@ class Information(commands.Cog):
 	@commands.command(brief='Sparky Version')
 	async def version(self,ctx):
 		
-		desc = "**Sparky Version: {} | Created by [s59_60r](https://www.codechef.com/users/s59_60r)**".format(VERSION)
+		desc = "**Sparky Version: {} | Created by [s59_60r](https://www.codechef.com/users/s59_60r)**".format(constants.VERSION)
 		embed = discord.Embed(description=desc, color=discord.Colour.red())
-		embed.add_field(name='Github', value=f"[Project]({GITHUB})", inline=True)
-		embed.set_thumbnail(url=BOTIMAGE)
+		embed.add_field(name='Github', value=f"[Project]({constants.GITHUB})", inline=True)
+		embed.set_thumbnail(url=constants.BOTIMAGE)
 		embed.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
 		await ctx.send(embed=embed)
 
