@@ -69,6 +69,7 @@ python main.py
  - 6★
  - 7★
 2. To run bot commands, use prefix (`=`) , e.g `=handles`
+3. Bot should have Admin privileges.
 
 ## Footer
 
