@@ -7,6 +7,8 @@ A Discord bot for Codechef
 2. Check recent submissions by a user
 3. Check upcoming contests.
 4. Plot Rating Graph
+5. Get useful insights about a user instantly
+
 
 ## Images
 
