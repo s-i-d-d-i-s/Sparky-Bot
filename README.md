@@ -14,13 +14,13 @@ A Discord bot for Codechef
 <img src="https://i.ibb.co/5xhYtBy/xcgxc.png" alt="xcgxc" border="0">
 
 #### Check recent submissions by users
-<img src="https://i.ibb.co/4m4M0zT/subs.png" alt="subs" border="0">
+<img src="https://i.ibb.co/PGJqMnN/sss.png" alt="subs" border="0">
 
 #### Plot Rating Graphs
 <img src="https://i.ibb.co/SKkQVJz/ratinggraph.png" alt="ratinggraph" border="0">
 
 #### Check upcoming contests
-<img src="https://i.ibb.co/TMVnwyg/cont.png" alt="cont" border="0">
+<img src="https://i.ibb.co/RCs7Js8/ss.png" alt="cont" border="0
 
 ## Installation
 
