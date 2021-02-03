@@ -20,7 +20,7 @@ A Discord bot for Codechef
 <img src="https://i.ibb.co/SKkQVJz/ratinggraph.png" alt="ratinggraph" border="0">
 
 #### Check upcoming contests
-<img src="https://i.ibb.co/RCs7Js8/ss.png" alt="cont" border="0
+<img src="https://i.ibb.co/RCs7Js8/ss.png" alt="cont" border="0>
 
 ## Installation
 
