@@ -8,6 +8,8 @@ A Discord bot for Codechef
 3. Check upcoming contests.
 4. Plot Rating Graph
 5. Get useful insights about a user instantly
+6. Get random unsolved problem by difficulty
+
 
 
 ## Images
@@ -26,6 +28,9 @@ A Discord bot for Codechef
 
 #### Get useful insights about a user instantly
 ![](https://i.ibb.co/23kzXBS/sssss.png)
+
+#### Get random unsolved problem by difficulty
+![](https://i.ibb.co/7nGGYMb/Capture.png)
 
 ## Installation
 
