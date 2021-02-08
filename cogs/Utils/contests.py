@@ -18,7 +18,7 @@ def getFutureContest():
 	embed = discord.Embed(description=desc, color=discord.Colour.gold())
 
 	current_time = time.strftime('%Y-%m-%dT%H:%M:%S')
-	url = f"https://clist.by/api/v1/contest/?resource__id=2&start__gt={current_time}&username=s5960r&api_key=2e6046e37a8c58f5f13464bea345d4ef5b17acbe"
+	url = f"https://clist.by/api/v1/contest/?resource__id=2&start__gt={current_time}&order_by=start&username=s5960r&api_key=2e6046e37a8c58f5f13464bea345d4ef5b17acbe"
 
 	data = json.loads(requests.get(url).content)['objects']
 

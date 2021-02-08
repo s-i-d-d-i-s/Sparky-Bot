@@ -32,7 +32,7 @@ class Identification(commands.Cog):
 		else:
 			hashString = user.getUserNameHash()
 			await ctx.send(f"`Indentifying {handle}`.\n```md\nSet your Codechef Name to '{hashString}' in 60 Seconds.```")	
-			if constants.DEBUG:
+			if constants.DEBUG == '1':
 				await asyncio.sleep(5)
 			else:
 				await asyncio.sleep(VERTIFICATION_TIME)
@@ -43,7 +43,7 @@ class Identification(commands.Cog):
 				if user_data['status']==1:
 					await ctx.send(f"```Handle not set!```")	
 				else:
-					if constants.DEBUG or user_data['name'].strip() == hashString:
+					if constants.DEBUG == '1' or user_data['name'].strip() == hashString:
 						roles = member.roles
 						for r in roles:
 							role = get(server.roles, name=r.name)
@@ -55,7 +55,7 @@ class Identification(commands.Cog):
 						colour = cc_commons.getDiscordColourByRating(user_data['rating'])
 						embed = discord.Embed(description=desc, color=colour)
 						embed.add_field(name='Rating', value=user_data['rating'], inline=True)
-						embed.add_field(name='Stars', value=user_data['rating'], inline=True)
+						embed.add_field(name='Stars', value=user_data['stars'], inline=True)
 						embed.set_thumbnail(url=user_data['profilePicture'])
 						await ctx.send(embed=embed)	
 					else:
@@ -99,7 +99,7 @@ class Identification(commands.Cog):
 						colour = cc_commons.getDiscordColourByRating(user_data['rating'])
 						embed = discord.Embed(description=desc, color=colour)
 						embed.add_field(name='Rating', value=user_data['rating'], inline=True)
-						embed.add_field(name='Stars', value=user_data['rating'], inline=True)
+						embed.add_field(name='Stars', value=user_data['stars'], inline=True)
 						embed.set_thumbnail(url=user_data['profilePicture'])
 						await ctx.send(embed=embed)	
 					else:
