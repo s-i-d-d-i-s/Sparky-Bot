@@ -2,10 +2,60 @@ import requests
 import discord
 import random
 import json
-## Return Webpage Content
-def getWebpage(url):
-    return requests.get(url).content
+import time
+from . import constants
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from webdriver_manager.chrome import ChromeDriverManager
 
+## Return Webpage Content
+def getWebpage(url,driver=None):
+    if driver == None:
+        return requests.get(url).content
+    else:
+        print("Using Driver")
+        driver.get(url)
+        return driver.page_source
+
+
+def setup_webdriver():
+    # def getSS():
+    #     time.time()
+    #     driver.save_screenshot(f"ss_{int(time.time())}.png")
+    def cookie_clean(driver):
+        try:
+            cookie = driver.find_element_by_id("gdpr-i-love-cookies")
+            cookie.click()
+        except:
+            print("Cookie Popup Not Found")
+            
+    def notif_clean(driver):
+        try:
+            notif = driver.find_element_by_id("onesignal-slidedown-cancel-button")
+            notif.click()
+        except:
+            print("No Notif Found")
+    options = Options()
+    options.add_argument('--headless')
+    options.add_argument("disable-dev-shm-usage")
+    options.add_argument('--disable-gpu') 
+    driver = webdriver.Chrome(executable_path=ChromeDriverManager().install(),chrome_options=options)
+    driver.set_window_size(640, 480)
+    driver.get("https://www.codechef.com/users/admin")
+    time.sleep(5)
+    cookie_clean(driver)
+    time.sleep(5)
+    notif_clean(driver)
+    time.sleep(5)
+    username = driver.find_element_by_id("edit-name")
+    username.send_keys(constants.USERNAME)
+    password = driver.find_element_by_id("edit-pass")
+    password.send_keys(constants.PASS)
+    submit = driver.find_element_by_id("edit-submit")
+    submit.click()
+    time.sleep(5)
+    print("Driver Ready!")
+    return driver
 
 
 ## Get discord colour based on rating

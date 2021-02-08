@@ -33,8 +33,8 @@ def plot_rating_bg(ranks):
 	plt.ylim(ymin, ymax)
 
 
-def getRatingGraph(handle):
-	data = user.getRatingHistory(handle)
+def getRatingGraph(handle,driver):
+	data = user.getRatingHistory(handle=handle,driver=driver)
 	ratings = []
 	times = []
 	for d in data['date_versus_rating']['all']:

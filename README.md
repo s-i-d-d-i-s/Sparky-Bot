@@ -7,10 +7,6 @@ A Discord bot for Codechef
 2. Check recent submissions by a user
 3. Check upcoming contests.
 4. Plot Rating Graph
-5. Get useful insights about a user instantly
-6. Get random unsolved problem by difficulty
-
-
 
 ## Images
 
@@ -18,19 +14,13 @@ A Discord bot for Codechef
 <img src="https://i.ibb.co/5xhYtBy/xcgxc.png" alt="xcgxc" border="0">
 
 #### Check recent submissions by users
-<img src="https://i.ibb.co/PGJqMnN/sss.png" alt="subs" border="0">
+<img src="https://i.ibb.co/4m4M0zT/subs.png" alt="subs" border="0">
 
 #### Plot Rating Graphs
 <img src="https://i.ibb.co/SKkQVJz/ratinggraph.png" alt="ratinggraph" border="0">
 
 #### Check upcoming contests
-![](https://i.ibb.co/RCs7Js8/ss.png)
-
-#### Get useful insights about a user instantly
-![](https://i.ibb.co/23kzXBS/sssss.png)
-
-#### Get random unsolved problem by difficulty
-![](https://i.ibb.co/7nGGYMb/Capture.png)
+<img src="https://i.ibb.co/TMVnwyg/cont.png" alt="cont" border="0">
 
 ## Installation
 
@@ -53,7 +43,7 @@ Create a bot on your server. Here is a [tutorial](https://github.com/reactiflux/
 
 In `main.py` replace  `"YOUR BOT TOKEN"` with your bot token.
 In `Utils\constants.py` replace `OWNER` with your Discord User ID
-In `Utils\constants.py` set `DEBUG` to `True`
+In `Utils\constants.py` set `DEBUG` to `True` and set `BASE_DIR` to the main folder.
 
 
 #### Final Steps 
@@ -74,7 +64,6 @@ python main.py
  - 6★
  - 7★
 2. To run bot commands, use prefix (`=`) , e.g `=handles`
-3. Bot should have Admin privileges.
 
 ## Footer
 

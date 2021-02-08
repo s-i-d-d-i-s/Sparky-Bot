@@ -13,6 +13,7 @@ class Identification(commands.Cog):
 	"""docstring for Identification"""
 	def __init__(self, client):
 		self.client = client
+		self.driver = cc_commons.setup_webdriver()
 
 	@commands.Cog.listener()
 	async def on_ready(self):
@@ -39,7 +40,7 @@ class Identification(commands.Cog):
 			server = ctx.message.guild
 			member = server.get_member(ctx.author.id)
 			try:
-				user_data = user.fetchUserData(handle)
+				user_data = user.fetchUserData(handle,self.driver)
 				if user_data['status']==1:
 					await ctx.send(f"```Handle not set!```")	
 				else:

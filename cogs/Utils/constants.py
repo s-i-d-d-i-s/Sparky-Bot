@@ -9,6 +9,9 @@ NON_OWNER_MSG = "```You can't run these commands, this instance of Sparky is own
 VERSION = "1.5"
 BASE_DIR ="/app"
 
+USERNAME = "CodechefUsername"
+PASS = "CodechefPassword~"
+
 
 DEBUG = 'False'
 try:

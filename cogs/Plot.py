@@ -11,6 +11,7 @@ class Plot(commands.Cog):
 	"""docstring for FunStuff"""
 	def __init__(self, client):
 		self.client = client
+		self.driver = cc_commons.setup_webdriver()
 
 	@commands.Cog.listener()
 	async def on_ready(self):
@@ -24,7 +25,7 @@ class Plot(commands.Cog):
 		else:
 			if cc_commons.isUserRated(username):
 				try:
-					discord_graph_file = rating_graph.getRatingGraph(username)
+					discord_graph_file = rating_graph.getRatingGraph(username,self.driver)
 					colour = cc_commons.getRandomColour()
 					embed = discord.Embed(title=f'Rating graph of {username}',colour=colour)
 					embed.set_image(url=f'attachment://{discord_graph_file.filename}')

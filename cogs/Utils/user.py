@@ -3,7 +3,6 @@ import bs4
 import random
 import string
 import discord
-from requests_html import HTMLSession
 import json
 from .import cc_commons
 import re
@@ -31,9 +30,9 @@ def rating_to_stars(rating):
 		return "7★"
 
 ## Fetch user data like stars, raing, name, and profile picture
-def fetchUserData(username):
+def fetchUserData(username,driver=None):
 	try:
-		page = cc_commons.getWebpage('https://www.codechef.com/users/{}'.format(username))
+		page = cc_commons.getWebpage('https://www.codechef.com/users/{}'.format(username),driver)
 		soup = bs4.BeautifulSoup(page, 'html.parser')
 		rating = int(soup.find('div', class_='rating-number').text)
 		stars = "1★"
@@ -55,11 +54,9 @@ def getUserPic(r):
     return "https://s3.amazonaws.com/codechef_shared"+soup.findAll('img',{"width":"70px"})[0].attrs['src']
 
 ## Get a user's rating history
-def getRatingHistory(handle,needStats=False):
+def getRatingHistory(handle,needStats=False,driver=None):
     temp = "https://www.codechef.com/users/{}".format(handle)
-    session = HTMLSession()
-    r = session.get(temp)
-    r = r.content
+    r = cc_commons.getWebpage(temp,driver)
     img=""
     if needStats == True:
         img= getUserPic(r)
@@ -130,7 +127,7 @@ def getSubmission(username):
 	return return_data
 
 
-def scan_util(username):
+def scan_util(username,driver=None):
     
     def isLong(name):
         ls=[
@@ -152,7 +149,7 @@ def scan_util(username):
                 return True
         return False
 
-    data = getRatingHistory(username,True)
+    data = getRatingHistory(username,True,driver)
     rating_data = data[0]
     contest_part_in = len(rating_data['date_versus_rating']['all'])
     current_rating = rating_data['date_versus_rating']['all'][::-1][0]['rating']
@@ -263,9 +260,9 @@ Nerd Stats:
     return analysis
 
 
-def getSolvedCodes(handle):
+def getSolvedCodes(handle,driver=None):
     url = f"https://www.codechef.com/users/{handle}"
-    data = bs4.BeautifulSoup(cc_commons.getWebpage(url))
+    data = bs4.BeautifulSoup(cc_commons.getWebpage(url,driver))
     data = data.findAll('section',{'class':'rating-data-section problems-solved'})[0]
     data = data.findAll('article')
     solved = {}

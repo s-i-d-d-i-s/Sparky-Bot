@@ -9,6 +9,7 @@ import re
 import time
 from .Utils import cc_commons, user
 
+
 class Features(commands.Cog):
 	solvedCodes = {}
 	lastUpdated = {}
@@ -17,11 +18,14 @@ class Features(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 		self.dataset = json.loads(open('Data/dataset.json').read())
+		self.driver = cc_commons.setup_webdriver()
+		
 
 	@commands.Cog.listener()
 	async def on_ready(self):
 		print("Features is online")
 	
+
 	@commands.command(brief='Display recent solves by a user')
 	async def stalk(self,ctx,username=None):
 		"""Display recent solves by a user"""
@@ -49,7 +53,7 @@ class Features(commands.Cog):
 		else:
 			await ctx.send(f"```Scanning {username}...Please Wait```")
 			try:
-				data = user.scan_util(username)
+				data = user.scan_util(username,self.driver)
 			except Exception as e:
 				print(e)
 				await ctx.send(f"```Something went wrong... Check the username or try again in sometime.```")
@@ -64,7 +68,7 @@ class Features(commands.Cog):
 				data['real_ratio'] = round(data['real_ratio'],3)
 
 			analysis = user.getAnalysis(username,data,feedback_rr,feedback_fav)
-			desc=f"**Analysis of [{username}](https://www.codechef.com/user/{username}) **"
+			desc=f"**Analysis of [{username}](https://www.codechef.com/users/{username}) **"
 			embed = discord.Embed(description=desc, color=cc_commons.getDiscordColourByRating(int(data['current_rating'])))
 			embed.add_field(name=f'**Result**', value=analysis, inline=False)
 			embed.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
@@ -87,7 +91,7 @@ class Features(commands.Cog):
 						self.lastUpdated[username]=0
 					if (cur_time - self.lastUpdated[username] ) > 1800:
 						self.lastUpdated[username]=cur_time
-						self.solvedCodes[username] = user.getSolvedCodes(username)
+						self.solvedCodes[username] = user.getSolvedCodes(username,self.driver)
 					solved = self.solvedCodes[username]
 					problems = self.dataset[level]
 					tries = 10
