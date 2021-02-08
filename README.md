@@ -49,10 +49,10 @@ Create a bot on your server. Here is a [tutorial](https://github.com/reactiflux/
 
 #### Add Bot Token
 
-In `main.py` replace `"YOUR BOT TOKEN"` with your bot token.
-In `Utils\constants.py` replace `OWNER` with your Discord User ID
-In `Utils\constants.py` set `DEBUG` to `True`
-In `Utils\constants.py` replace `USERNAME` and `PASS` with a valid Codechef Username and Password. This account would be used to login and avoid `Hold Right There Sparky!` Page.
+1. In `main.py` replace `"YOUR BOT TOKEN"` with your bot token.
+2. In `Utils\constants.py` replace `OWNER` with your Discord User ID
+3. In `Utils\constants.py` set `DEBUG` to `True`
+4. In `Utils\constants.py` replace `USERNAME` and `PASS` with a valid Codechef Username and Password. This account would be used to login and avoid `Hold Right There Sparky!` Page.
 
 
 #### Final Steps 
