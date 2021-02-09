@@ -33,8 +33,11 @@ def plot_rating_bg(ranks):
 	plt.ylim(ymin, ymax)
 
 
-def getRatingGraph(handle,driver):
-	data = user.getRatingHistory(handle=handle,driver=driver)
+def getRatingGraph(handle,driver,data=None):
+	
+	if data == None:
+		data = user.getRatingHistory(handle=handle,driver=driver)
+
 	ratings = []
 	times = []
 	for d in data['date_versus_rating']['all']:
@@ -45,4 +48,26 @@ def getRatingGraph(handle,driver):
 	plt.plot(times,ratings,linestyle='-',marker='o',markersize=6,markerfacecolor='white',markeredgewidth=0.5)
 	plot_rating_bg(constants.RATED_RANKS)
 	plt.gcf().autofmt_xdate()
-	return get_current_figure_as_file()
+	return get_current_figure_as_file(),data
+
+
+
+def getPeakRatingGraph(handle,driver,data=None):
+	
+	if data == None:
+		data = user.getRatingHistory(handle=handle,driver=driver)
+	last = -9999
+	ratings = []
+	times = []
+	for d in data['date_versus_rating']['all']:
+		
+		if int(d['rating']) > last:
+			times.append(dt.datetime.strptime(d['end_date'],'%Y-%m-%d %H:%M:%S'))
+			ratings.append(int(d['rating']))
+			last=int(d['rating'])
+	plt.clf()
+	plt.axes().set_prop_cycle(rating_color_cycler)
+	plt.plot(times,ratings,linestyle='-',marker='o',markersize=6,markerfacecolor='white',markeredgewidth=0.5)
+	plot_rating_bg(constants.RATED_RANKS)
+	plt.gcf().autofmt_xdate()
+	return get_current_figure_as_file(),data

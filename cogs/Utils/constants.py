@@ -10,8 +10,9 @@ VERSION = "1.5"
 BASE_DIR ="/app"
 
 USERNAME = "CodechefUsername"
-PASS = "CodechefPassword~"
+PASS = "CodechefPassword"
 
+USE_REQUESTS = False
 
 DEBUG = 'False'
 try:

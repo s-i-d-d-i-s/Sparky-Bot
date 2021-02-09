@@ -19,9 +19,10 @@ def getWebpage(url,driver=None):
 
 
 def setup_webdriver():
-    # def getSS():
-    #     time.time()
-    #     driver.save_screenshot(f"ss_{int(time.time())}.png")
+    if constants.USE_REQUESTS==True:
+        return None
+
+
     def cookie_clean(driver):
         try:
             cookie = driver.find_element_by_id("gdpr-i-love-cookies")
@@ -44,9 +45,6 @@ def setup_webdriver():
     driver.get("https://www.codechef.com/users/admin")
     time.sleep(5)
     cookie_clean(driver)
-    time.sleep(5)
-    notif_clean(driver)
-    time.sleep(5)
     username = driver.find_element_by_id("edit-name")
     username.send_keys(constants.USERNAME)
     password = driver.find_element_by_id("edit-pass")
