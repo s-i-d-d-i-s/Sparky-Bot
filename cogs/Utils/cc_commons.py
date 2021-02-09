@@ -22,7 +22,6 @@ def setup_webdriver():
     if constants.USE_REQUESTS==True:
         return None
 
-
     def cookie_clean(driver):
         try:
             cookie = driver.find_element_by_id("gdpr-i-love-cookies")
