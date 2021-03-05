@@ -48,8 +48,8 @@ pip install -r requirements.txt
 Create a bot on your server. Here is a [tutorial](https://github.com/reactiflux/discord-irc/wiki/Creating-a-discord-bot-&-getting-a-token) on that
 
 #### Add Bot Token
-
-1. In `cogs\Utils\constants.py` replace `TOKEN` line 22, with your bot token.
+0. Create an Enviroment Variable `DEBUG` and set it to '1'
+1. In `cogs\Utils\constants.py` replace `TOKEN` line 30, with your bot token.
 2. In `cogs\Utils\constants.py` replace `OWNER` with your Discord User ID
 3. In `cogs\Utils\constants.py` set `DEBUG` to `True`
 4. In `cogs\Utils\cc_api.py` set `CLIENT_ID` and `CLIENT_SECRET` with your API Credentials respectively.

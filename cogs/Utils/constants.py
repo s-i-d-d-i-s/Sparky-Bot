@@ -22,12 +22,12 @@ DEBUG = 'False'
 TOKEN = "YourBotToken"
 try:
 	DEBUG = os.environ['DEBUG']
-	TOKEN = "YourBotToken"
 except:
 	pass
 
 if DEBUG=='1':
 	print("Debug Mode")
+	TOKEN = "YourDebugBotToken"
 	BASE_DIR = pathlib.Path(__file__).parent.parent.parent.absolute()
 
 
