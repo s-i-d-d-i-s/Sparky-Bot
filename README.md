@@ -49,10 +49,10 @@ Create a bot on your server. Here is a [tutorial](https://github.com/reactiflux/
 
 #### Add Bot Token
 
-1. In `main.py` replace `"YOUR BOT TOKEN"` with your bot token.
-2. In `Utils\constants.py` replace `OWNER` with your Discord User ID
-3. In `Utils\constants.py` set `DEBUG` to `True`
-4. In `Utils\constants.py` replace `USERNAME` and `PASS` with a valid Codechef Username and Password. This account would be used to login and avoid `Hold Right There Sparky!` Page.
+1. In `cogs\Utils\constants.py` replace `TOKEN` line 22, with your bot token.
+2. In `cogs\Utils\constants.py` replace `OWNER` with your Discord User ID
+3. In `cogs\Utils\constants.py` set `DEBUG` to `True`
+4. In `cogs\Utils\cc_api.py` set `CLIENT_ID` and `CLIENT_SECRET` with your API Credentials respectively.
 
 
 #### Final Steps 
@@ -72,7 +72,7 @@ python main.py
  - 5★
  - 6★
  - 7★
-2. To run bot commands, use prefix (`=`) , e.g `=future`
+2. To run bot commands, use prefix (`=`) , e.g `=contest future`
 3. Bot should have Admin privileges.
 
 
@@ -83,5 +83,5 @@ All contributions are welcome.
 
 ## Thanks
 
-- [imjohnzakkam](https://github.com/imjohnzakkam) for testing the bot in development and giving valuable feedback.
+- [imjohnzakkam](https://github.com/imjohnzakkam) for developing and testing the bot in development and giving valuable feedback.
 - [SayangitBIT](https://github.com/SayangitBIT) for testing the bot in development and giving valuable feedback.
