@@ -6,17 +6,23 @@ GITHUB = "https://github.com/s-i-d-d-i-s/Sparky-Bot"
 BOTIMAGE = "https://i.ibb.co/YpTJHzh/Sparky-Logo.png"
 OWNER = "762226757864390666"
 NON_OWNER_MSG = "```You can't run these commands, this instance of Sparky is owned by someone else.\nYou can set your own instance of bot to run these commands, as these commands can mess up a lot of stuff.```"
-VERSION = "1.5"
+VERSION = "2.0"
 BASE_DIR ="/app"
 
-USERNAME = "CodechefUsername"
-PASS = "CodechefPassword"
 
-USE_REQUESTS = False
+USERDATALIM = 3600
+RATINGLIM = 3600
+RANKLISTLIM = 3600
+RANKLIST_COOLDOWN = 20
+ORG_RANKLIST_COOLDOWN = 120
+SUBLIM = 120
+USE_REQUESTS = True
 
 DEBUG = 'False'
+TOKEN = "YourBotToken"
 try:
 	DEBUG = os.environ['DEBUG']
+	TOKEN = "YourBotToken"
 except:
 	pass
 

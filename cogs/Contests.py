@@ -19,7 +19,12 @@ class Contests(commands.Cog):
 	async def on_ready(self):
 		print("Contests is online")
 
-	@commands.command(brief='Display future contests')
+	@commands.group(brief='Commands related to contests',invoke_without_command=True)
+	async def contest(self, ctx):
+		"""Commands related to handles"""
+		await ctx.send_help('contest')
+
+	@contest.command(brief='Display future contests')
 	async def future(self,ctx):
 		"""Get Upcoming Contests on Codechef"""
 		try:
@@ -29,7 +34,24 @@ class Contests(commands.Cog):
 		except:
 			await ctx.send("```API Limit Exhausted !```")
 
+	@contest.command(brief='Display past contests')
+	async def past(self,ctx):
+		"""Get Past Contests on Codechef"""
+		try:
+			data = contests.getPastContest()
+			data.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
+			await ctx.send(embed=data)
+		except:
+			await ctx.send("```API Limit Exhausted !```")
 
-
+	@contest.command(brief='Display present contests')
+	async def present(self,ctx):
+		"""Get Running Contests on Codechef"""
+		try:
+			data = contests.getPresentContest()
+			data.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
+			await ctx.send(embed=data)
+		except:
+			await ctx.send("```API Limit Exhausted !```")
 def setup(client):
 	client.add_cog(Contests(client))

@@ -4,8 +4,10 @@ import random
 import string
 import discord
 import json
-from .import cc_commons
+import ujson
+from .import cc_commons,database
 import re
+from datetime import datetime
 ## Generate a hash for user verfication
 def getUserNameHash():
 	length = 10
@@ -29,41 +31,47 @@ def rating_to_stars(rating):
 	else:
 		return "7★"
 
-## Fetch user data like stars, raing, name, and profile picture
-def fetchUserData(username,driver=None):
-	try:
-		page = cc_commons.getWebpage('https://www.codechef.com/users/{}'.format(username),driver)
-		soup = bs4.BeautifulSoup(page, 'html.parser')
-		rating = int(soup.find('div', class_='rating-number').text)
-		stars = "1★"
-		try:
-			stars = rating_to_stars(rating)
-		except:
-			print("Unrated User")
-		header_containers = soup.find_all('header')
-		name = header_containers[1].find('h2').text
-		image = "https://s3.amazonaws.com/codechef_shared"+soup.findAll('img',{"width":"70px"})[0].attrs['src']
-		return {'status':0,'rating':rating,'stars':stars,'name':name,'profilePicture':image}
-	except Exception as e:
-		print(e)
-		return {'status':1}
+## Fetch user data like stars, raing, name, and profile picture from API
+def fetchUserData(username,apiObj=None):
+    try:
+        try:
+            data = apiObj.getUserData(username)
+        except Exception as e:
+            print("Data Not Feteched",e)
+            return {'status':1}
 
-#Get user image from page source
-def getUserPic(r):
-    soup = bs4.BeautifulSoup(r, 'html.parser')
-    return "https://s3.amazonaws.com/codechef_shared"+soup.findAll('img',{"width":"70px"})[0].attrs['src']
-
+        rating = data['data']['content']['ratings']['allContest']
+        stars = rating_to_stars(rating)
+        name = data['data']['content']['fullname']
+        image = data['profile_image']
+        long_rating = data['data']['content']['ratings']['long']
+        short_rating = data['data']['content']['ratings']['short']
+        ltime_rating = data['data']['content']['ratings']['lTime']
+        
+        return {
+            'status':0,
+            'rating':rating,'stars':stars,
+            'name':name,'profilePicture':image,
+            'long_rating':long_rating,'short_rating':short_rating,
+            'ltime_rating':ltime_rating
+            }
+    except Exception as e:    
+        print(e," at fetchUserData")
+        return {'status':1}
+            
+	
 ## Get a user's rating history
-def getRatingHistory(handle,needStats=False,driver=None):
+def getRatingHistory(handle,apiObj):
+    
+    rating_data = apiObj.db.fetch_user_rating_hist(handle)
+    if rating_data != None:
+        print(f"Using Cache for {handle} in getRatingHistory ")
+        return ujson.loads(rating_data[0])
     temp = "https://www.codechef.com/users/{}".format(handle)
-    r = cc_commons.getWebpage(temp,driver)
+    r = cc_commons.getWebpage(temp)
     img=""
-    if needStats == True:
-        img= getUserPic(r)
     r = str(r)
     stats = ""
-    if needStats == True:
-        stats = getSubmissionStats(r)
     idx = r.find("date_versus_rating")
     new_r = r[idx-1:]
     idx = new_r.find("}]")
@@ -73,8 +81,7 @@ def getRatingHistory(handle,needStats=False,driver=None):
     new_r = new_r.replace("\\",'')
     new_r = new_r.replace("\'",'')
     data = json.loads(new_r)
-    if needStats==True:
-        return [data,stats,img]
+    apiObj.db.update_cc_user_data_rating_hist(handle,ujson.dumps(data))
     return data
 
 
@@ -97,37 +104,28 @@ def getSubmissionStats(r):
 
 
 ## Get a user recent submissions
-def getSubmission(username):
-	url = "https://www.codechef.com/recent/user?page=0&user_handle={}".format(username)
-	data = json.loads(cc_commons.getWebpage(url))
-	if data['max_page'] == 0:
-		return None
-	data = data['content']
-	data = bs4.BeautifulSoup(data)
-	date_data = data.findAll('tr')[1:-1]
-	subs = data.findAll('a')[:-2]
-	subs = [x.text for x in subs]
-	imgs = data.findAll('img')[:-2]
-	pts = data.findAll('span')
-	imgs = ["https://s3.amazonaws.com/codechef_shared"+x.attrs['src'] for x in imgs]
-	return_data = []
-	for i in range(min(len(imgs),5)):
-		verd = cc_commons.verdict_img_to_verdict(imgs[i])
-		pts2 = re.findall("\[.*\]",pts[i].text)
-		if len(pts2)==0:
-			pts2 = cc_commons.verdict_img_to_full(verd)
-		else:
-			pts2="{}".format(pts2[0])
-		em = '\N{EN SPACE}'
-		sq = '\N{WHITE SQUARE WITH UPPER RIGHT QUADRANT}'
-		cur_date = date_data[i].findAll('td')[0].text
-		prob_url = "https://www.codechef.com"+date_data[0].findAll('a')[0].attrs['href']
-		desc = f'`{em}{verd}{em}| {em}{pts2}{em} | {em}{cur_date}{em} | {em}`[`link {sq}`]({prob_url} "Link to contest page")'
-		return_data.append([subs[i],desc])
-	return return_data
+def getSubmission(username,apiObj):
+    data = apiObj.getSubmissions(username)
+    data = data['result']['data']['content']
+    subs = []
+    for d in data:
+        cur = {'result':d['result'],'solution':'https://www.codechef.com/viewsolution/{}'.format(d['id']),'date':datetime.strptime(d['date'],"%Y-%m-%d %H:%M:%S").strftime('%I:%M:%p %d/%m/%Y'),'code':d['problemCode']}
+        cur['problemUrl'] = "https://www.codechef.com/{}/problems/{}".format(d['contestCode'],d['problemCode'])
+        subs.append(cur)
+    return_data = []
+    for i in range(min(len(subs),5)):
+        em = '\N{EN SPACE}'
+        sq = '\N{WHITE SQUARE WITH UPPER RIGHT QUADRANT}'
+        verd = subs[i]['result']
+        sol_link = subs[i]['solution']
+        cur_date = subs[i]['date']
+        prob_url = subs[i]['problemUrl']
+        desc = f'`{em}{verd}{em}| {em}`[`view solution {sq}`]({sol_link} "View Solution")`{em} | {em}{cur_date}{em} | {em}`[`link {sq}`]({prob_url} "Link to contest page")'
+        return_data.append([subs[i]['code'],desc])
+    return return_data
 
 
-def scan_util(username,driver=None):
+def scan_util(username,apiObj):
     
     def isLong(name):
         ls=[
@@ -260,14 +258,11 @@ Nerd Stats:
     return analysis
 
 
-def getSolvedCodes(handle,driver=None):
-    url = f"https://www.codechef.com/users/{handle}"
-    data = bs4.BeautifulSoup(cc_commons.getWebpage(url,driver))
-    data = data.findAll('section',{'class':'rating-data-section problems-solved'})[0]
-    data = data.findAll('article')
+def getSolvedCodes(handle,apiObj):
+    data = apiObj.getUserData(handle)
+    problem_stats = data['data']['content']['problemStats']['solved']
     solved = {}
-    for d in data[0].findAll('a'):
-        solved[(d.text)]=True
-    for d in data[1].findAll('a'):
-        solved[(d.text)]=True
+    for p in problem_stats:
+        for code in problem_stats[p]:
+            solved[code]=True
     return solved

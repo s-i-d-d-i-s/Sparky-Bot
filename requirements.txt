@@ -3,9 +3,8 @@ bs4==0.0.1
 discord.py==1.5.1
 async-timeout==3.0.1
 bs4==0.0.1
-peewee==3.13.3
 requests==2.24.0
 matplotlib==3.3.3
 seaborn==0.11.1
-webdriver-manager==3.3.0
-selenium==3.141.0
+psycopg2==2.8.6
+ujson==4.0.2

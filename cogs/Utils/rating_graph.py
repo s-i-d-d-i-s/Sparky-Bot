@@ -33,41 +33,59 @@ def plot_rating_bg(ranks):
 	plt.ylim(ymin, ymax)
 
 
-def getRatingGraph(handle,driver,data=None):
-	
-	if data == None:
-		data = user.getRatingHistory(handle=handle,driver=driver)
-
-	ratings = []
-	times = []
-	for d in data['date_versus_rating']['all']:
-		times.append(dt.datetime.strptime(d['end_date'],'%Y-%m-%d %H:%M:%S'))
-		ratings.append(int(d['rating']))
+def getRatingGraph(handles,apiObj):
 	plt.clf()
 	plt.axes().set_prop_cycle(rating_color_cycler)
-	plt.plot(times,ratings,linestyle='-',marker='o',markersize=6,markerfacecolor='white',markeredgewidth=0.5)
-	plot_rating_bg(constants.RATED_RANKS)
-	plt.gcf().autofmt_xdate()
-	return get_current_figure_as_file(),data
-
-
-
-def getPeakRatingGraph(handle,driver,data=None):
-	
-	if data == None:
-		data = user.getRatingHistory(handle=handle,driver=driver)
-	last = -9999
-	ratings = []
-	times = []
-	for d in data['date_versus_rating']['all']:
-		
-		if int(d['rating']) > last:
+	labels=[]
+	for i in range(len(handles)):
+		handle = handles[i]
+		data = user.getRatingHistory(handle,apiObj)
+		ratings = []
+		times = []
+		cur_rating=0
+		for d in data['date_versus_rating']['all']:
 			times.append(dt.datetime.strptime(d['end_date'],'%Y-%m-%d %H:%M:%S'))
-			ratings.append(int(d['rating']))
-			last=int(d['rating'])
-	plt.clf()
-	plt.axes().set_prop_cycle(rating_color_cycler)
-	plt.plot(times,ratings,linestyle='-',marker='o',markersize=6,markerfacecolor='white',markeredgewidth=0.5)
+			ratings.append(int(d['rating']))	
+			cur_rating=int(d['rating'])
+		plt.plot(times,ratings,linestyle='-',marker='o',markersize=6,markerfacecolor='white',markeredgewidth=0.5)
+		labels.append(f"{handle} : {cur_rating}")
 	plot_rating_bg(constants.RATED_RANKS)
 	plt.gcf().autofmt_xdate()
-	return get_current_figure_as_file(),data
+	plt.legend(labels, loc='upper left')
+	return get_current_figure_as_file()
+
+
+def getPeakRatingGraph(handles,apiObj):
+	plt.clf()
+	plt.axes().set_prop_cycle(rating_color_cycler)
+	labels=[]
+	for i in range(len(handles)):
+		handle = handles[i]
+		data = user.getRatingHistory(handle,apiObj)
+		ratings = []
+		times = []
+		last = -9999
+		cur_rating=0
+		for d in data['date_versus_rating']['all']:
+			if int(d['rating']) > last:
+				times.append(dt.datetime.strptime(d['end_date'],'%Y-%m-%d %H:%M:%S'))
+				ratings.append(int(d['rating']))	
+				cur_rating=int(d['rating'])
+				last = cur_rating
+		plt.plot(times,ratings,linestyle='-',marker='o',markersize=6,markerfacecolor='white',markeredgewidth=0.5)
+		labels.append(f"{handle} : {cur_rating}")
+	plot_rating_bg(constants.RATED_RANKS)
+	plt.gcf().autofmt_xdate()
+	plt.legend(labels, loc='upper left')
+	return get_current_figure_as_file()
+
+def getSolvedHistogram(handles,datalist):
+	plt.clf()
+	plt.xlabel('Problem Levels')
+	plt.ylabel('Number solved')
+	labels = []
+	for i in range(len(handles)):
+		labels.append(f"{handles[i]} : {len(datalist[i])}")
+	plt.hist(datalist, bins=[0,1,2,3,4,5,6],align='left')
+	plt.legend(labels, loc='upper right')
+	return get_current_figure_as_file()
