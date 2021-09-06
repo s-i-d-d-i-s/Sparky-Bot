@@ -75,10 +75,7 @@ class Users(commands.Cog):
 			await self.remove(ctx,userid)
 		data = cc_commons.getUserData(username)
 		if data['status'] == True:
-			if constants.DEBUG or data['name'] == hashVal:
-				await self.identify_user(ctx,user_id,guild_id,username,data)
-			else:
-				await ctx.send(f"```Hash not matched !\nExpected: {hashVal}\nFound: {data['name']}```")
+			await self.identify_user(ctx,user_id,guild_id,username,data)			
 		else:
 			ctx.send("```Please check the username or Try again !```")
 
