@@ -140,10 +140,10 @@ class DB:
 			print(data)
 			data=data[0]
 			data = {
-				'user_id':data[1],
-				'guild_id':data[2],
-				'cchandle': data[3],
-				'active':data[4],
+				'user_id':data[0],
+				'guild_id':data[1],
+				'cchandle': data[2],
+				'active':data[3],
 			}
 		return data
 
