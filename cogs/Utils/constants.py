@@ -15,7 +15,7 @@ USERDATA_UPDATE_COOLDOWN = 3600
 
 
 TOKEN = os.getenv('TOKEN', 'NO_TOKEN')
-DEBUG=TOKEN == 'NO_TOKEN'
+DEBUG= TOKEN == 'NO_TOKEN'
 if DEBUG==True:
 	print("Debug Mode")
 	BASE_DIR = pathlib.Path(__file__).parent.parent.parent.absolute()

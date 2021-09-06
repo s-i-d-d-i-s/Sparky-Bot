@@ -38,11 +38,7 @@ def getUserRatingHistory(username,db):
 	cur_time = int(time.time())
 	if data==None or int(data['lastupdated']) +constants.USERDATA_UPDATE_COOLDOWN < cur_time:
 		new_user = data==None
-		data = cc_commons.getUserData(username)
-		if new_user == False:
-			cc_commons.update_cc_user_easy(username, data, db)
-		else:
-			cc_commons.add_cc_user_easy(username, data, db)
+		data = cc_commons.getUserData_easy(username, db)
 		print("Fetching new for ",username)
 	return json.loads(data['rating_data'])
 
@@ -52,11 +48,7 @@ def getSolvedCodes(username,db):
 	cur_time = int(time.time())
 	if data==None or int(data['lastupdated']) +constants.USERDATA_UPDATE_COOLDOWN < cur_time:
 		new_user = data==None
-		data = cc_commons.getUserData(username)
-		if new_user == False:
-			cc_commons.update_cc_user_easy(username, data, db)
-		else:
-			cc_commons.add_cc_user_easy(username, data, db)
+		data = cc_commons.getUserData_easy(username, db)
 		print("Fetching new for ",username)
 	return json.loads(data['solved_problems'])
 

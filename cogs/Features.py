@@ -5,7 +5,7 @@ import asyncio
 import random
 from discord.utils import get
 import os
-import pickle
+import pickle,time
 import json
 
 def isLong(name):
@@ -33,6 +33,7 @@ class Features(commands.Cog):
 	"""docstring for Features"""
 	def __init__(self, client):
 		self.client = client
+		self.dataset = json.loads(open('Data/dataset.json').read())
 		self.db=database.DB()
 	@commands.Cog.listener()
 	async def on_ready(self):
@@ -82,5 +83,56 @@ class Features(commands.Cog):
 		await ctx.send(embed=embed)
 
 	
+
+
+
+
+
+	@commands.command(brief='Get a random unsolved problem')
+	async def gimme(self,ctx,username=None,level=None):
+		"""level = ['noob','easy','medium','hard']"""
+
+		if username != None and username.find('+')!=-1:
+			level=username
+
+
+		if username==None or username.find('+')!=-1:
+			username = self.db.get_user_by_discord_id(ctx.author.id,ctx.message.guild.id)
+			if username == None:
+				await ctx.send('```Make sure you enter command like, e.g  " =gimme s59_60r medium " ```')
+				return 
+	
+		if level == None:
+			level = random.choice(['noob','easy','medium'])
+		if level not in ['+noob','+easy','+medium','+hard']:
+			await ctx.send("```Enter a valid level : ['+noob','+easy','+medium','+hard']```")
+		else:
+			level = level[1:]
+			try:
+				cur_time = int(time.time())
+				solved = cc_commons.getUserData_easy(username, self.db)
+				solved = json.loads(solved['solved_problems'])
+				problems = self.dataset[level]
+				tries = 10
+				found=False
+				while tries>0:
+					cur_prob = random.choice(problems)
+					if cur_prob['problemCode'] not in solved:
+						found=True
+						title = '{}'.format(cur_prob['problemCode'])
+						desc = cur_prob['problemName']
+						embed = discord.Embed(title=title, url=cur_prob['link'], description=desc)
+						embed.add_field(name='Level', value=level.capitalize())
+						embed.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
+						await ctx.send(f'Recommended problem for `{username}`', embed=embed)
+						break
+					tries-=1
+				if found == False:
+					await ctx.send(f"```Unable to find a matching problem, try again later!```")
+			except Exception as e:
+				print("Error at =gimme",e)
+				await ctx.send(f"```Something went wrong, check username or try again```")
+
+
 def setup(client):
 	client.add_cog(Features(client))

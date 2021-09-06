@@ -200,3 +200,17 @@ class DB:
 		else:
 			res = data[0][0]
 		return res
+
+	def drop_tables(self):
+		cur = self.con.cursor()
+		cur.execute(f"DROP TABLE users")
+		cur.execute(f"DROP TABLE cc_user_data")
+		self.con.commit()
+		cur.close()
+
+	def data_dump(self):
+		cur = self.con.cursor()
+		cur.execute(f"SELECT userid,guildid,cchandle FROM users WHERE active=1")
+		data = cur.fetchall()
+		cur.close()
+		return data
