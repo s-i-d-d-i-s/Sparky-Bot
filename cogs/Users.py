@@ -164,8 +164,13 @@ class Users(commands.Cog):
 		if res==None:
 			await ctx.send("```No user has registered their handle```")
 			return 
-		
-		res = [(x,self.db.fetch_cc_user(x['cchandle'])['rating'],ctx.guild.get_member(int(x['user_id']))) for x in res]
+
+		res2 = []
+		for x in res:
+			try:
+				res2.append((x,self.db.fetch_cc_user(x['cchandle'])['rating'],ctx.guild.get_member(int(x['user_id']))))
+			except Exception as e:
+				print(e)
 		
 		res= sorted(res, key = lambda x: x[1], reverse=True)
 
