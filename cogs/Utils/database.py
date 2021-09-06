@@ -196,7 +196,7 @@ class DB:
 		cur.execute(f"SELECT cchandle FROM users WHERE active=1 AND userid='{user_id}' AND guildid='{guild_id}'")
 		data = cur.fetchall()
 		if(len(data)==0):
-			data=None
+			res=None
 		else:
 			res = data[0][0]
 		return res
