@@ -3,10 +3,10 @@ from collections import namedtuple
 import pathlib
 
 GITHUB = "https://github.com/s-i-d-d-i-s/Sparky-Bot"
-BOTIMAGE = "https://i.ibb.co/YpTJHzh/Sparky-Logo.png"
+BOTIMAGE = "https://i.ibb.co/hC725X4/SPARKY-2.png"
 OWNER = "762226757864390666"
 NON_OWNER_MSG = "```You can't run these commands, this instance of Sparky is owned by someone else.\nYou can set your own instance of bot to run these commands, as these commands can mess up a lot of stuff.```"
-VERSION = "3.0"
+VERSION = "4.0"
 BASE_DIR ="/app"
 
 
