@@ -137,8 +137,8 @@ class DB:
 		if(len(data)==0):
 			data=None
 		else:
-			print(data)
 			data=data[0]
+			print("Data",data)
 			data = {
 				'user_id':data[0],
 				'guild_id':data[1],
@@ -163,9 +163,9 @@ class DB:
 			res = []
 			for x in data:
 				cur = {
-					'user_id':x[1],
-					'guild_id':x[2],
-					'cchandle': x[3],
+					'user_id':x[0],
+					'guild_id':x[1],
+					'cchandle': x[2],
 				}
 				res.append(cur)
 		return res
