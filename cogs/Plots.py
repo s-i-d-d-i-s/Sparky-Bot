@@ -37,18 +37,21 @@ class Plots(commands.Cog):
 		handles = []
 		peak = False
 		
+		print("args",args)
 		for x in args:
 			if x == "+peak":
 				peak=True
 			else:
 				if cc_commons.isUserRated(x) == True:
 					handles.append(x)
-				
+
+		print("handles",handles)
 		if len(handles) > 3:
 			await ctx.send("```Enter at max 3 handles```")
 			return 
 		if len(args)==0:
 			username = self.db.get_user_by_discord_id(ctx.author.id,ctx.message.guild.id)
+			print("username",username)
 			if username!=None:
 				handles.append(username)
 			
