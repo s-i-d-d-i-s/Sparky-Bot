@@ -137,6 +137,7 @@ class DB:
 		if(len(data)==0):
 			data=None
 		else:
+			print(data)
 			data=data[0]
 			data = {
 				'user_id':data[1],
