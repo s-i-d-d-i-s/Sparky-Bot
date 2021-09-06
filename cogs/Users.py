@@ -167,11 +167,12 @@ class Users(commands.Cog):
 
 		res2 = []
 		for x in res:
-			print(x)
+			
 			try:
 				res2.append([x,self.db.fetch_cc_user(x['cchandle'])['rating'],ctx.guild.get_member(int(x['user_id']))])
 			except Exception as e:
 				print(e)
+				print(x)
 		res=res2
 		res= sorted(res, key = lambda x: x[1], reverse=True)
 
