@@ -171,7 +171,7 @@ class Users(commands.Cog):
 				res2.append([x,self.db.fetch_cc_user(x['cchandle'])['rating'],ctx.guild.get_member(int(x['user_id']))])
 			except Exception as e:
 				print(e)
-		
+		res=res2
 		res= sorted(res, key = lambda x: x[1], reverse=True)
 
 		style = table.Style('{:>}  {:<}  {:<}  {:<}  {:<}')
