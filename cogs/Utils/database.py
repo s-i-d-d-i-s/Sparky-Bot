@@ -9,7 +9,7 @@ import os
 class DB:
 	def __init__(self):
 		self.con=""
-		if constants.DEBUG != '1':
+		if constants.DEBUG != True:
 			url = urlparse.urlparse(os.environ['DATABASE_URL'])
 			dbname = url.path[1:]
 			user = url.username
@@ -42,218 +42,161 @@ class DB:
 		
 	def create_tables(self):
 		cur = self.con.cursor()
-		cur.execute("""
-			CREATE TABLE IF NOT EXISTS bot_data(
-			id SERIAL PRIMARY KEY,
-			access_token VARCHAR (255) NOT NULL,
-			expires_after VARCHAR (255) NOT NULL
-			);
-			""")
-		
+		# cur.execute("""
+		# 	CREATE TABLE IF NOT EXISTS bot_data(
+		# 	id SERIAL PRIMARY KEY,
+		# 	access_token VARCHAR (255) NOT NULL,
+		# 	expires_after VARCHAR (255) NOT NULL
+		# 	);
+		# 	""")
 		cur.execute("""
 			CREATE TABLE IF NOT EXISTS users(
-				id SERIAL PRIMARY KEY,
 				userid VARCHAR (200) NOT NULL,
 				guildid VARCHAR (200) NOT NULL,
 				cchandle VARCHAR (100) NOT NULL,
-				ccrating INTEGER 
+				active int DEFAULT 1
 			);
 			""")
 		cur.execute("""
 			CREATE TABLE IF NOT EXISTS cc_user_data(
-				id SERIAL PRIMARY KEY,
-				handle VARCHAR (200) NOT NULL,
-				userdata TEXT NOT NULL,
-				subs TEXT NOT NULL,
+				handle VARCHAR (200) PRIMARY KEY,
+				name VARCHAR (200) ,
+				profile_pic VARCHAR (200),
+				rating INT DEFAULT 1500 ,
 				ratinghistory TEXT NOT NULL,
-				lastupdated_userdata VARCHAR (255) NOT NULL,
-				lastupdated_subs VARCHAR (255) NOT NULL,
-				lastupdated_rating VARCHAR (255) NOT NULL
-			);
-			""")
-		cur.execute("""
-			CREATE TABLE IF NOT EXISTS college_ranklist(
-				id SERIAL PRIMARY KEY,
-				guild_id VARCHAR (200) NOT NULL,
-				chan_id VARCHAR (200) NOT NULL,
-				msg_id VARCHAR (200) NOT NULL,
-				college_name VARCHAR (200) NOT NULL,
-				ranklist TEXT NOT NULL,
-				lastupdated VARCHAR (255) NOT NULL
-			);
-			""")
-		cur.execute("""
-			CREATE TABLE IF NOT EXISTS contest_cache(
-				id SERIAL PRIMARY KEY,
-				contest_code VARCHAR (200) NOT NULL,
-				ranklist TEXT NOT NULL,
+				solved_problems TEXT NOT NULL,
+				submission_stats TEXT NOT NULL,
 				lastupdated VARCHAR (255) NOT NULL
 			);
 			""")
 		cur.close()
 		self.con.commit()
 
-	def update_api_data(self,access_token,expire_after):
+
+	def add_cc_user(self,handle,name,profile_pic,rating,ratinghistory,solved_problems,submission_stats):
 		cur = self.con.cursor()
-		cur.execute("SELECT * FROM bot_data")
-		if(len(cur.fetchall())==0):
-			cur.execute(f"INSERT INTO bot_data(access_token,expires_after) VALUES({access_token},{expire_after})")
+		lastupdated = str(int(time.time()))
+		cur.execute(f"INSERT INTO cc_user_data(handle,name,profile_pic,rating,ratinghistory,solved_problems,submission_stats,lastupdated) VALUES('{handle}','{name}','{profile_pic}',{rating},'{ratinghistory}','{solved_problems}','{submission_stats}','{lastupdated}')")
+		self.con.commit()
+		cur.close()
+
+	def fetch_cc_user(self,handle):
+		cur = self.con.cursor()
+		cur.execute(f"SELECT * FROM cc_user_data WHERE handle='{handle}'")
+		data = cur.fetchall()
+		if(len(data)==0):
+			data=None
 		else:
-			cur.execute(f"UPDATE bot_data SET access_token= '{access_token}',expires_after = '{expire_after}'")
-		self.con.commit()
+			data=data[0]
+			print(data)
+			data = {
+				"name":data[1],
+				"profile_pic" : data[2],
+				"rating" : data[3],
+				"rating_data": data[4],
+				"solved_problems":data[5],
+				"submission_stats": data[6],
+				"lastupdated": data[7]
+        	}
+		return data
 		cur.close()
-		
-	def fetch_api_data(self):
-		cur = self.con.cursor()
-		cur.execute("SELECT * FROM bot_data")
-		data = cur.fetchall()
-		if len(data)==0:
-			cur = self.con.cursor()
-			cur.execute(f"INSERT INTO bot_data(access_token,expires_after) VALUES('s59_60r',0)")
-			self.con.commit()
-			return {'access_token':"s59_60r",'expires_after':int(0)}
-		data = data[0]
-		cur.close()
-		return {'access_token':data[1],'expires_after':int(data[2])}
 
-	def add_user_data(self,userid,guildid,cchandle,ccrating):
+	def update_cc_user(self,handle,name,profile_pic,rating,ratinghistory,solved_problems,submission_stats):
 		cur = self.con.cursor()
-		cur.execute(f"INSERT INTO users(userid,guildid,cchandle,ccrating) VALUES('{userid}','{guildid}','{cchandle}',{ccrating})")
+		lastupdated = str(int(time.time()))
+		cur.execute(f"UPDATE cc_user_data SET name=%s,profile_pic=%s,rating=%s,ratinghistory=%s,solved_problems=%s,submission_stats=%s,lastupdated=%s WHERE handle=%s",(name,profile_pic,rating,ratinghistory,solved_problems,submission_stats,lastupdated,handle))
 		self.con.commit()
 		cur.close()
-		
-	def fetch_user_data(self,userid,guildid):
+
+
+	def add_user_to_guild(self,userid,guildid,cchandle):
 		cur = self.con.cursor()
-		cur.execute(f"SELECT * FROM users where userid= '{userid}' AND guildid ='{guildid}'")
+		lastupdated = str(int(time.time()))
+		cur.execute(f"INSERT INTO users(userid,guildid,cchandle) VALUES('{userid}','{guildid}','{cchandle}')")
+		self.con.commit()
+		cur.close()
+
+	def update_user_to_guild(self,userid,guildid,cchandle,active):
+		cur = self.con.cursor()
+		lastupdated = str(int(time.time()))
+		cur.execute(f"UPDATE users SET cchandle=%s,active=%s WHERE userid=%s,guildid=%s",(cchandle,active,userid,guildid))
+		self.con.commit()
+		cur.close()
+
+	def user_inactive_to_guild(self,userid,guildid):
+		cur = self.con.cursor()
+		lastupdated = str(int(time.time()))
+		cur.execute(f"UPDATE users SET active=%s WHERE userid=%s AND guildid=%s",(0,userid,guildid))
+		self.con.commit()
+		cur.close()
+	
+	def get_user_to_guild(self,userid,guildid):
+		cur = self.con.cursor()
+		cur.execute(f"SELECT * FROM users WHERE userid='{userid}' AND guildid='{guildid}'")
 		data = cur.fetchall()
-		self.con.commit()
-		cur.close()
+		if(len(data)==0):
+			data=None
+		else:
+			data=data[0]
+			data = {
+				'user_id':data[0],
+				'guild_id':data[1],
+				'cchandle': data[2],
+				'active':data[3],
+			}
 		return data
 
-	def update_user_data(self,userid,guildid,cchandle,ccrating):
+	def remove_user_to_guild(self,userid,guildid):
 		cur = self.con.cursor()
-		cur.execute(f"UPDATE users SET cchandle = '{cchandle}',ccrating = '{ccrating}' WHERE userid= '{userid}' AND guildid ='{guildid}'")
+		cur.execute(f"DELETE FROM users WHERE userid='{userid}' AND guildid='{guildid}'")
 		self.con.commit()
 		cur.close()
 
 	def fetch_guild_users(self,guildid):
 		cur = self.con.cursor()
-		cur.execute(f"SELECT * FROM users where guildid ='{guildid}'")
-		data = cur.fetchall()
-		self.con.commit()
-		cur.close()
-		return data
-
-	def update_cc_user_data_rating_hist(self,handle,ratinghist):
-		cur = self.con.cursor()
-		cur.execute(f"SELECT * FROM cc_user_data WHERE handle='{handle}'")
-		if(len(cur.fetchall())==0):
-			# New Handle
-			cur.execute(f"INSERT INTO cc_user_data(handle,userdata,ratinghistory,lastupdated_userdata,lastupdated_rating,subs,lastupdated_subs) VALUES(%s,%s,%s,%s,%s,%s,%s)",(handle,"{}",ratinghist,str(0),str(int(time.time())),"{}",str(0)))
-			self.con.commit()
-			cur.close()
-		else:
-			cur.execute(f"UPDATE cc_user_data SET ratinghistory=%s,lastupdated_rating=%s WHERE handle = %s",(ratinghist,str(int(time.time())),handle))
-			self.con.commit()
-			cur.close()
-		
-	def update_cc_user_data_userdata(self,handle,userdata):
-		cur = self.con.cursor()
-		cur.execute(f"SELECT * FROM cc_user_data WHERE handle='{handle}'")
-		if(len(cur.fetchall())==0):
-			# New Handle
-			cur.execute(f"INSERT INTO cc_user_data(handle,userdata,ratinghistory,lastupdated_userdata,lastupdated_rating,subs,lastupdated_subs) VALUES(%s,%s,%s,%s,%s,%s,%s)",(handle,userdata,"{}",str(int(time.time())),str(0),"{}",str(0)))
-			self.con.commit()
-			cur.close()
-		else:
-			cur.execute(f"UPDATE cc_user_data SET userdata=%s,lastupdated_userdata=%s WHERE handle=%s",(userdata,str(int(time.time())),handle))
-			self.con.commit()
-			cur.close()
-			
-	def update_cc_user_data_subs(self,handle,subs):
-		cur = self.con.cursor()
-		cur.execute(f"SELECT * FROM cc_user_data WHERE handle='{handle}'")
-		if(len(cur.fetchall())==0):
-			# New Handle
-			cur.execute(f"INSERT INTO cc_user_data(handle,userdata,ratinghistory,lastupdated_userdata,lastupdated_rating,subs,lastupdated_subs) VALUES(%s,%s,%s,%s,%s,%s,%s)",(handle,"{}","{}",str(0),str(0),subs,str(int(time.time()))))
-			self.con.commit()
-			cur.close()
-		else:
-			cur.execute(f"UPDATE cc_user_data SET subs=%s,lastupdated_subs=%s WHERE handle=%s",(subs,str(int(time.time())),handle))
-			self.con.commit()
-			cur.close()
-			
-	def fetch_cc_user_data(self,handle):
-		cur = self.con.cursor()
-		cur.execute(f"SELECT userdata,lastupdated_userdata FROM cc_user_data WHERE handle='{handle}'")
-		data = cur.fetchall()
-
-		if(len(data)==0):
-			data=None
-		else:
-			data=data[0]
-			if(int(time.time())>constants.USERDATALIM+int(data[1])):
-				data=None
-		cur.close()
-		return data
-
-	def fetch_user_subs(self,handle):
-		cur = self.con.cursor()
-		cur.execute(f"SELECT subs,lastupdated_subs FROM cc_user_data WHERE handle='{handle}'")
+		cur.execute(f"SELECT * FROM users WHERE guildid='{guildid}' AND active=1")
 		data = cur.fetchall()
 		if(len(data)==0):
 			data=None
 		else:
-			data=data[0]
-			if(int(time.time())>constants.SUBLIM+int(data[1])):
-				data=None
-		cur.close()
-		return data
+			res = []
+			for x in data:
+				cur = {
+					'user_id':x[1],
+					'guild_id':x[2],
+					'cchandle': x[3],
+				}
+				res.append(cur)
+		return res
 
-	def fetch_user_rating_hist(self,handle):
+	def fetch_distinct_active_handles(self):
 		cur = self.con.cursor()
-		cur.execute(f"SELECT ratinghistory,lastupdated_rating FROM cc_user_data WHERE handle='{handle}'")
+		cur.execute(f"SELECT DISTINCT cchandle FROM users WHERE active=1")
 		data = cur.fetchall()
 		if(len(data)==0):
 			data=None
 		else:
-			data=data[0]
-			if(int(time.time())>constants.RATINGLIM+int(data[1])):
-				data=None
-		cur.close()
-		return data
+			res = [x[0] for x in data]
+		return res
+	
 
-	def add_college_data(self,guild_id,msg_id,chan_id,college_name,ranklist):
+	def fetch_active_handles(self):
 		cur = self.con.cursor()
-		cur.execute(f"INSERT INTO college_ranklist(guild_id,chan_id,msg_id,college_name,ranklist,lastupdated) VALUES('{guild_id}','{chan_id}','{msg_id}','{college_name}','{ranklist}','{int(time.time())}')")
-		self.con.commit()
-		cur.close()
-
-
-	def fetch_college_data(self,guild_id):
-		cur = self.con.cursor()
-		cur.execute(f"SELECT * FROM college_ranklist where guild_id ='{guild_id}'")
+		cur.execute(f"SELECT userid,guildid,cchandle FROM users WHERE active=1")
 		data = cur.fetchall()
-		self.con.commit()
-		cur.close()
-		return data
+		if(len(data)==0):
+			data=None
+		else:
+			res = [{'user_id':x[0],'guild_id':x[1],'username':x[2]} for x in data]
+		return res
 
-	def update_college_data(self,guildid,chan_id,msg_id,college_name,ranklist):
-		cur = self.con.cursor()
-		cur.execute(f"UPDATE college_ranklist SET college_name = '{college_name}',ranklist = '{ranklist}',chan_id='{chan_id}',msg_id='{msg_id}',lastupdated='{int(time.time())}' WHERE guild_id= '{guildid}'")
-		self.con.commit()
-		cur.close()
 
-	def add_contest_data(self,contest_code,ranklist):
+	def get_user_by_discord_id(self,user_id,guild_id):
 		cur = self.con.cursor()
-		cur.execute(f"INSERT INTO contest_cache(contest_code,ranklist,lastupdated) VALUES('{contest_code}','{ranklist}','{int(time.time())}')")
-		self.con.commit()
-		cur.close()
-
-	def fetch_contest_data(self,contest_code):
-		cur = self.con.cursor()
-		cur.execute(f"SELECT * FROM contest_cache where contest_code ='{contest_code}'")
+		cur.execute(f"SELECT cchandle FROM users WHERE active=1 AND userid='{user_id}' AND guildid='{guild_id}'")
 		data = cur.fetchall()
-		self.con.commit()
-		cur.close()
-		return data
+		if(len(data)==0):
+			data=None
+		else:
+			res = data[0][0]
+		return res

@@ -4,9 +4,9 @@ import datetime as dt
 from cycler import cycler
 import time,os
 import seaborn as sns
-from . import constants
-from .import user
+from . import constants,cc_commons
 import io
+import json
 
 
 rating_color_cycler = cycler('color', ['#5d4dff', '#009ccc', '#00ba6a', '#b99d27', '#cb2aff'])
@@ -33,13 +33,41 @@ def plot_rating_bg(ranks):
 	plt.ylim(ymin, ymax)
 
 
-def getRatingGraph(handles,apiObj):
+def getUserRatingHistory(username,db):
+	data = db.fetch_cc_user(username)
+	cur_time = int(time.time())
+	if data==None or int(data['lastupdated']) +constants.USERDATA_UPDATE_COOLDOWN < cur_time:
+		new_user = data==None
+		data = cc_commons.getUserData(username)
+		if new_user == False:
+			cc_commons.update_cc_user_easy(username, data, db)
+		else:
+			cc_commons.add_cc_user_easy(username, data, db)
+		print("Fetching new for ",username)
+	return json.loads(data['rating_data'])
+
+
+def getSolvedCodes(username,db):
+	data = db.fetch_cc_user(username)
+	cur_time = int(time.time())
+	if data==None or int(data['lastupdated']) +constants.USERDATA_UPDATE_COOLDOWN < cur_time:
+		new_user = data==None
+		data = cc_commons.getUserData(username)
+		if new_user == False:
+			cc_commons.update_cc_user_easy(username, data, db)
+		else:
+			cc_commons.add_cc_user_easy(username, data, db)
+		print("Fetching new for ",username)
+	return json.loads(data['solved_problems'])
+
+
+def getRatingGraph(handles,db):
 	plt.clf()
 	plt.axes().set_prop_cycle(rating_color_cycler)
 	labels=[]
 	for i in range(len(handles)):
 		handle = handles[i]
-		data = user.getRatingHistory(handle,apiObj)
+		data = getUserRatingHistory(handle,db)
 		ratings = []
 		times = []
 		cur_rating=0
@@ -55,13 +83,13 @@ def getRatingGraph(handles,apiObj):
 	return get_current_figure_as_file()
 
 
-def getPeakRatingGraph(handles,apiObj):
+def getPeakRatingGraph(handles,db):
 	plt.clf()
 	plt.axes().set_prop_cycle(rating_color_cycler)
 	labels=[]
 	for i in range(len(handles)):
 		handle = handles[i]
-		data = user.getRatingHistory(handle,apiObj)
+		data = data = getUserRatingHistory(handle,db)
 		ratings = []
 		times = []
 		last = -9999

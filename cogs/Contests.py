@@ -13,7 +13,6 @@ class Contests(commands.Cog):
 	"""docstring for Contests"""
 	def __init__(self, client):
 		self.client = client
-		self.future_contests = None
 
 	@commands.Cog.listener()
 	async def on_ready(self):
@@ -21,7 +20,7 @@ class Contests(commands.Cog):
 
 	@commands.group(brief='Commands related to contests',invoke_without_command=True)
 	async def contest(self, ctx):
-		"""Commands related to handles"""
+		"""Commands related to contests"""
 		await ctx.send_help('contest')
 
 	@contest.command(brief='Display future contests')

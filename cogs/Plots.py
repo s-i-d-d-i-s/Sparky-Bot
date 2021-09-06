@@ -1,32 +1,33 @@
 import discord
 from discord.ext import commands
+from .Utils import contests,database,rating_graph,discord_commons,cc_commons
 import asyncio
-import json
-import requests
-import bs4
 import random
-import time
-from .Utils import rating_graph,cc_commons,user,cc_api
+from discord.utils import get
+import os,json
+import pickle
 
-class Graphs(commands.Cog):
 
+
+class Plots(commands.Cog):
+	"""docstring for Plots"""
 	def __init__(self, client):
 		self.client = client
+		self.db = database.DB()
 		self.dataset = json.loads(open('Data/dataset.json').read())
 		self.dataset2 = {}
-		self.apiObj = cc_api.CodechefAPI()
 		for y in self.dataset:
 			for x in self.dataset[y]:
 				self.dataset2[(x['problemCode'])]=y
 
-	@commands.group(brief='Graphs for analyzing Codechef activity',invoke_without_command=True)
-	async def plot(self, ctx):
-		"""Plot various graphs."""
-		await ctx.send_help('plot')
-		
 	@commands.Cog.listener()
 	async def on_ready(self):
-		print("Plot is online")
+		print("Plots is online")
+
+	@commands.group(brief='Commands related to plots',invoke_without_command=True)
+	async def plot(self, ctx):
+		"""Commands related to handles"""
+		await ctx.send_help('plot')
 
 	@plot.command(brief='Display rating graph of a user', usage='[+peak]')
 	async def rating(self,ctx, *args: str):
@@ -40,46 +41,43 @@ class Graphs(commands.Cog):
 			if x == "+peak":
 				peak=True
 			else:
-				try:
-					if cc_commons.isUserRated(x,self.apiObj) == True:
-						handles.append(x)
-				except:
-					pass
-
+				if cc_commons.isUserRated(x) == True:
+					handles.append(x)
+				
 		if len(handles) > 3:
 			await ctx.send("```Enter at max 3 handles```")
 			return 
-		if len(handles)==0:
-			username = cc_commons.get_user_by_discord_id(ctx.author.id,ctx.message.guild.id,self.apiObj.db)
+		if len(args)==0:
+			username = self.db.get_user_by_discord_id(ctx.author.id,ctx.message.guild.id)
 			if username!=None:
 				handles.append(username)
+			
 		if len(handles)==0:
 			await ctx.send("```No Rated Handles Given```")
 		else:
 			try:
-				cur_time = int(time.time())
 				discord_graph_file=""
-				rating_data = ""
 				if peak == False:
-					rating_data = rating_graph.getRatingGraph(handles,self.apiObj)
+					discord_graph_file = rating_graph.getRatingGraph(handles,self.db)
 				else:
-					rating_data = rating_graph.getPeakRatingGraph(handles,self.apiObj)
-
-				discord_graph_file = rating_data
+					discord_graph_file = rating_graph.getPeakRatingGraph(handles,self.db)
 				username = ""
 				for x in handles:
 					username+=f"[{x}](https://www.codechef.com/users/{x}), "
 				username=username[:-2]
-				colour = cc_commons.getRandomColour()
+				colour = discord_commons.getRandomColour()
 				embed = discord.Embed(description=f'**Rating graph of {username}**',colour=colour)
 				embed.set_image(url=f'attachment://{discord_graph_file.filename}')
 				embed.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
 				await ctx.send(embed=embed,file=discord_graph_file)	
 			except Exception as e:
-				print(e)
+				print("Error at =rating",e)
+				import traceback
+				traceback.print_exc()
 				await ctx.send("```Unable to Plot, check username or try again later!```")	
-			
-	@plot.command(brief='Display histogram of problem sovled', usage='[+noob,+easy,+hard,+medium,+extcont,+challenge]')
+
+
+	@plot.command(brief='Display histogram of problem solved', usage='[+noob,+easy,+hard,+medium,+extcont,+challenge]')
 	async def solved(self,ctx, *args: str):
 		"""Display histogram of problem sovled
 		   Filters = [+noob,+easy,+hard,+medium,+extcont,+challenge]
@@ -119,8 +117,8 @@ class Graphs(commands.Cog):
 		if len(handles) > 3:
 			await ctx.send("```Enter at max 3 handles```")
 			return 
-		if len(handles)==0:
-			username = cc_commons.get_user_by_discord_id(ctx.author.id,ctx.message.guild.id,self.apiObj.db)
+		if len(args)==0:
+			username = self.db.get_user_by_discord_id(ctx.author.id,ctx.message.guild.id)
 			if username!=None:
 				handles.append(username)
 				
@@ -133,9 +131,9 @@ class Graphs(commands.Cog):
 				error = False
 				solvedCodes = {}
 				try:
-					solvedCodes = user.getSolvedCodes(x,self.apiObj)
+					solvedCodes = rating_graph.getSolvedCodes(x,self.db)
 				except Exception as e:
-					await ctx.send(str(e))
+					print("Error in =plot solved",e)
 					error=True
 				
 				if error:
@@ -150,20 +148,16 @@ class Graphs(commands.Cog):
 					except:
 						pass
 				data.append(cur)
-
 			discord_graph_file = rating_graph.getSolvedHistogram(handles,data)
-
 			username = ""
 			for x in handles:
 				username+=f"[{x}](https://www.codechef.com/users/{x}), "
 			username=username[:-2]
-			colour = cc_commons.getRandomColour()
+			colour = discord_commons.getRandomColour()
 			embed = discord.Embed(description=f'**Histogram of {username}**',colour=colour)
 			embed.set_image(url=f'attachment://{discord_graph_file.filename}')
 			embed.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
 			await ctx.send(embed=embed,file=discord_graph_file)	
 
-
-
 def setup(client):
-	client.add_cog(Graphs(client))
+	client.add_cog(Plots(client))
