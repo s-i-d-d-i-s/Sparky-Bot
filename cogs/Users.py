@@ -168,7 +168,7 @@ class Users(commands.Cog):
 		res2 = []
 		for x in res:
 			try:
-				res2.append((x,self.db.fetch_cc_user(x['cchandle'])['rating'],ctx.guild.get_member(int(x['user_id']))))
+				res2.append([x,self.db.fetch_cc_user(x['cchandle'])['rating'],ctx.guild.get_member(int(x['user_id']))])
 			except Exception as e:
 				print(e)
 		
