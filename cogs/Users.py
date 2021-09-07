@@ -199,8 +199,12 @@ class Users(commands.Cog):
 
 
 	## Role update
+	
 	@handle.command(brief='Check users in server')
 	async def role_update(self,ctx):
+		if str(ctx.author.id) != str(constants.OWNER):
+			await ctx.send(constants.NON_OWNER_MSG)
+			return 
 		res = self.db.fetch_distinct_active_handles()
 		if res==None:
 			await ctx.send("```No users for role update```")
