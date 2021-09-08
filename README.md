@@ -1,4 +1,4 @@
-# Sparky-Bot (Beta)
+# Sparky-Bot (Beta) [OUTDATED - WILL BE UPDATED SOON]
 
 A Discord bot for Codechef
 
