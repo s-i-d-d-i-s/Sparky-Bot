@@ -8,6 +8,10 @@ import os
 import pickle,time
 import json
 
+
+COOLDOWN = 15
+
+
 def isLong(name):
 	ls=[
 		'January Challenge',
@@ -40,6 +44,7 @@ class Features(commands.Cog):
 		print("Features is online")
 
 	@commands.command(brief='Scan a user')
+	@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 	async def scan(self, ctx,username=None):
 		"""Scan a user"""
 		if username==None:
@@ -91,6 +96,7 @@ class Features(commands.Cog):
 
 
 	@commands.command(brief='Get a random unsolved problem')
+	@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 	async def gimme(self,ctx,username=None,level=None):
 		"""level = ['noob','easy','medium','hard']"""
 	
@@ -136,5 +142,11 @@ class Features(commands.Cog):
 				await ctx.send(f"```Something went wrong, check username or try again```")
 
 
+
+	@gimme.error
+	@scan.error
+	async def contest_error(self,ctx, error):
+		if isinstance(error, commands.CommandOnCooldown):
+			await ctx.send(f'```This command is on cooldown, you can use it in {round(error.retry_after, 2)} seconds```')
 def setup(client):
 	client.add_cog(Features(client))

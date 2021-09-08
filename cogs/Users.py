@@ -7,7 +7,7 @@ from discord.utils import get
 import os
 import time
 
-
+COOLDOWN = 15
 
 class Users(commands.Cog):
 	"""docstring for Users"""
@@ -28,6 +28,7 @@ class Users(commands.Cog):
 
 	## Identify users based on Hash Value checking
 	@handle.command(brief='Identify yourself')
+	@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 	async def identify(self,ctx,username=None):
 		"""Identify a user"""
 
@@ -155,6 +156,7 @@ class Users(commands.Cog):
 
 	## List all users of a server
 	@handle.command(brief='Check users in server')
+	@commands.cooldown(1, COOLDOWN-5, commands.BucketType.user)
 	async def list(self,ctx):
 		"""Check Users in Server'"""
 		res = self.db.fetch_guild_users(str(ctx.message.guild.id))
@@ -162,15 +164,12 @@ class Users(commands.Cog):
 			await ctx.send("```No user has registered their handle```")
 			return 
 
-		print("res",res)
 		res2 = []
 		for x in res:
 			try:
 				res2.append([x,self.db.fetch_cc_user(x['cchandle'])['rating'],ctx.guild.get_member(int(x['user_id']))])
 			except Exception as e:
-				print(e)
-				print(x)
-		print("res2",res2)
+				print("Exception at =handle list",e)
 		res=res2
 		res= sorted(res, key = lambda x: x[1], reverse=True)
 
@@ -200,7 +199,8 @@ class Users(commands.Cog):
 
 	## Role update
 	
-	@handle.command(brief='Check users in server')
+	@handle.command(brief='Update roles on a server')
+	@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 	async def role_update(self,ctx):
 		if str(ctx.author.id) != str(constants.OWNER):
 			await ctx.send(constants.NON_OWNER_MSG)
@@ -229,6 +229,11 @@ class Users(commands.Cog):
 			await self.clean_star_roles(member,server)
 			await self.set_star(member,server,rating)
 
-		
+	@identify.error
+	@list.error
+	@role_update.error
+	async def contest_error(self,ctx, error):
+		if isinstance(error, commands.CommandOnCooldown):
+			await ctx.send(f'```This command is on cooldown, you can use it in {round(error.retry_after, 2)} seconds```')
 def setup(client):
 	client.add_cog(Users(client))

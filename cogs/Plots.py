@@ -7,7 +7,7 @@ from discord.utils import get
 import os,json
 import pickle
 
-
+COOLDOWN = 15
 
 class Plots(commands.Cog):
 	"""docstring for Plots"""
@@ -30,6 +30,7 @@ class Plots(commands.Cog):
 		await ctx.send_help('plot')
 
 	@plot.command(brief='Display rating graph of a user', usage='[+peak]')
+	@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 	async def rating(self,ctx, *args: str):
 		""" Display rating graph of a user
 			Filters = [+peak]
@@ -81,6 +82,7 @@ class Plots(commands.Cog):
 
 
 	@plot.command(brief='Display histogram of problem solved', usage='[+noob,+easy,+hard,+medium,+extcont,+challenge]')
+	@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 	async def solved(self,ctx, *args: str):
 		"""Display histogram of problem sovled
 		   Filters = [+noob,+easy,+hard,+medium,+extcont,+challenge]
@@ -162,5 +164,12 @@ class Plots(commands.Cog):
 			embed.set_footer(text=f'Requested by {ctx.author}', icon_url=ctx.author.avatar_url)
 			await ctx.send(embed=embed,file=discord_graph_file)	
 
+
+	@rating.error
+	@solved.error
+	async def contest_error(self,ctx, error):
+		if isinstance(error, commands.CommandOnCooldown):
+			await ctx.send(f'```This command is on cooldown, you can use it in {round(error.retry_after, 2)} seconds```')
+			
 def setup(client):
 	client.add_cog(Plots(client))

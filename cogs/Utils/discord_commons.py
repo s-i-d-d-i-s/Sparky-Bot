@@ -53,3 +53,5 @@ def getUserNameHash():
 	length = 10
 	result_str = ''.join(random.choice(string.ascii_uppercase) for i in range(length))
 	return result_str
+
+

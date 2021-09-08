@@ -15,10 +15,11 @@ USERDATA_UPDATE_COOLDOWN = 3600
 
 
 TOKEN = os.getenv('TOKEN', 'NO_TOKEN')
-DEBUG= TOKEN == 'NO_TOKEN'
+DEBUG = TOKEN == 'NO_TOKEN'
 if DEBUG==True:
 	print("Debug Mode")
 	BASE_DIR = pathlib.Path(__file__).parent.parent.parent.absolute()
+	TOKEN = open(str(BASE_DIR)+'/Notebooks/token.txt').read()
 
 
 # DATABASE_DIR = os.path.join(BASE_DIR,"Data/database.db")
