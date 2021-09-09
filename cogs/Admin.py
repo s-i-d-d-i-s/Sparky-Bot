@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from .Utils import database,cc_commons
+from .Utils import database,cc_commons,cc_api
 import asyncio
 import random
 from discord.utils import get
@@ -16,6 +16,7 @@ class Admin(commands.Cog):
 	def __init__(self, client):
 		self.client = client
 		self.db = database.DB()
+		self.cc_api = cc_api.CodechefAPI(self.db)
 
 	@commands.Cog.listener()
 	async def on_ready(self):
@@ -116,6 +117,23 @@ class Admin(commands.Cog):
 				await ctx.send(f'```Server {toleave.name} left !```')
 			except Exception as e:
 				await ctx.send(f'```{e}```')
+
+	@admin.command(brief='Refresh API Tokens')
+	@commands.has_role('Developer')
+	@commands.has_role('Admin')
+	async def refresh_tokens(self,ctx):
+		"""
+			=refresh_tokens [server_id]
+		"""
+		if str(ctx.author.id) != str(constants.OWNER):
+			await ctx.send(constants.NON_OWNER_MSG)
+		else:
+			try:
+				data = self.cc_api.getAccessToken()
+				self.db.update_api_data(data['access_token'],data['expires_after'])
+			except Exception as e:
+				await ctx.send(f'```{e}```')
+
 
 	@admin.command(brief='Load data from database')
 	@commands.has_role('Developer')

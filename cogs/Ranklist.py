@@ -36,22 +36,23 @@ class Ranklist(commands.Cog):
 			return
 		cur_time = int(time.time())
 		ranklist = []
+		data = None
 		print(cur_time)
 		if contest_id in self.cache and self.cache[contest_id][0]+CACHE_TL>cur_time:
 			print("Using Cache")
 			data = json.loads(self.cache[contest_id][1])
 		else:
-			print("Fetching New")
-			guild_users = self.db.fetch_guild_users(ctx.message.guild.id)
-			handles = set()
-			for x in guild_users:
-				handles.add(x['cchandle'])
-			print(handles)
+			print("Fetching New")	
 			data = self.api.getRanklistContest(contest_id)
 			print("Data Fetched")
 			self.cache[contest_id] = [cur_time,json.dumps(data)]
 
 
+		guild_users = self.db.fetch_guild_users(ctx.message.guild.id)
+		handles = set()
+		for x in guild_users:
+			handles.add(x['cchandle'])
+		print(handles)
 		for i in range(len(data)):
 			if data[i]['username'] in handles:
 				ranklist.append(data[i])
