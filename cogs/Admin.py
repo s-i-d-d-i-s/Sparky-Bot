@@ -131,6 +131,7 @@ class Admin(commands.Cog):
 			try:
 				data = self.cc_api.getAccessToken()
 				self.db.update_api_data(data['access_token'],data['expires_after'])
+				await ctx.send(f'```Tokens Refreshed```')
 			except Exception as e:
 				await ctx.send(f'```{e}```')
 
