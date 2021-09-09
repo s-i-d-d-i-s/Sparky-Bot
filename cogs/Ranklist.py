@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from .Utils import contests,discord_commons, cc_api,database,table
+from .Utils import contests,discord_commons, cc_api,database,table,constants
 import asyncio
 import random
 from discord.utils import get
@@ -33,10 +33,11 @@ class Ranklist(commands.Cog):
 
 	@commands.command(brief='Display ranklist for a contests')
 	@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
-	@commands.has_role('Developer')
-	@commands.has_role('Admin')
 	async def ranklist(self,ctx,contest_id=None):
 		"""Get Ranklist for a contest"""
+		if str(ctx.author.id) != str(constants.OWNER):
+			await ctx.send("```Only s59_60r can invoke this command, as it's in beta, expect to be working in a week```")
+			return 
 		if contest_id == None:
 			await ctx.send('```Please enter a contest code to get the ranklist```')
 			return
