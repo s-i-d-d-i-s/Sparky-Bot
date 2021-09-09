@@ -42,13 +42,13 @@ class DB:
 		
 	def create_tables(self):
 		cur = self.con.cursor()
-		# cur.execute("""
-		# 	CREATE TABLE IF NOT EXISTS bot_data(
-		# 	id SERIAL PRIMARY KEY,
-		# 	access_token VARCHAR (255) NOT NULL,
-		# 	expires_after VARCHAR (255) NOT NULL
-		# 	);
-		# 	""")
+		cur.execute("""
+			CREATE TABLE IF NOT EXISTS api_data(
+			id SERIAL PRIMARY KEY,
+			access_token VARCHAR (255) NOT NULL,
+			expires_after VARCHAR (255) NOT NULL
+			);
+			""")
 		cur.execute("""
 			CREATE TABLE IF NOT EXISTS users(
 				userid VARCHAR (200) NOT NULL,
@@ -72,6 +72,28 @@ class DB:
 		cur.close()
 		self.con.commit()
 
+	def update_api_data(self,access_token,expire_after):
+		cur = self.con.cursor()
+		cur.execute("SELECT * FROM api_data")
+		if(len(cur.fetchall())==0):
+			cur.execute(f"INSERT INTO api_data(access_token,expires_after) VALUES({access_token},{expire_after})")
+		else:
+			cur.execute(f"UPDATE api_data SET access_token= '{access_token}',expires_after = '{expire_after}'")
+		self.con.commit()
+		cur.close()
+
+	def fetch_api_data(self):
+		cur = self.con.cursor()
+		cur.execute("SELECT * FROM api_data")
+		data = cur.fetchall()
+		if len(data)==0:
+			cur = self.con.cursor()
+			cur.execute(f"INSERT INTO api_data(access_token,expires_after) VALUES('s59_60r',0)")
+			self.con.commit()
+			return {'access_token':"s59_60r",'expires_after':int(0)}
+		data = data[0]
+		cur.close()
+		return {'access_token':data[1],'expires_after':int(data[2])}
 
 	def add_cc_user(self,handle,name,profile_pic,rating,ratinghistory,solved_problems,submission_stats):
 		cur = self.con.cursor()
