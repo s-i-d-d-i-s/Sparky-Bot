@@ -24,7 +24,13 @@ class Ranklist(commands.Cog):
 	async def on_ready(self):
 		print("Ranklist is online")
 
-			
+
+	@commands.command(brief='Clear Ranklist Cache')
+	@commands.has_role('Developer')
+	@commands.has_role('Admin')
+	async def clear(self,ctx):
+		self.cache = {}
+
 	@commands.command(brief='Display ranklist for a contests')
 	@commands.cooldown(1, COOLDOWN, commands.BucketType.user)
 	@commands.has_role('Developer')
