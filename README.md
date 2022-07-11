@@ -1,4 +1,6 @@
-# Sparky-Bot (Beta) [OUTDATED - WILL BE UPDATED SOON]
+# Sparky-Bot (Beta) [OUTDATED - WILL BE UPDATED SOON] 
+
+## Sparky was deactivate on 11th July 2022 as I'm now busy with other things in life and have little to no time to manage it. It was a very special app for me, and i truly enjoyed working on it but I can't host it forever. 
 
 A Discord bot for Codechef
 
